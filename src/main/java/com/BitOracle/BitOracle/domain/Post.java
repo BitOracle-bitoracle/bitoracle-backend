@@ -33,7 +33,7 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostImage> postImageList = new ArrayList<>();
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Like> likeList = new ArrayList<>();
+    private List<Likes> likeList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

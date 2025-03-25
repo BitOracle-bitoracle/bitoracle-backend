@@ -3,6 +3,8 @@ package com.BitOracle.BitOracle.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -16,8 +18,8 @@ public class Coin {
     private Long coinId;
     @Column(nullable = false, name = "coin_name")
     private String coinName;
-    @Column(nullable = false, name = "quantity")
-    private Long quantity;
+    @Column(nullable = false, name = "quantity", precision = 18, scale = 8)
+    private BigDecimal quantity;
 
     // 포폴쪽이 확정되지 않아서 아직
 }
