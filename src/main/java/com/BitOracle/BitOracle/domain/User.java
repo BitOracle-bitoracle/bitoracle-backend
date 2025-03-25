@@ -31,6 +31,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> postList = new ArrayList<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Like> likeList = new ArrayList<>();
+    private List<Likes> likeList = new ArrayList<>();
     // 포폴 쪽은 아직 추가 안함
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Prediction> predictionList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Record record;
 }
