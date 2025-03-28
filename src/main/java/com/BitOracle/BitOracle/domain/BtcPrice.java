@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -21,11 +21,8 @@ public class BtcPrice {
     private Long priceId;
 
     @Column(name = "coin_date")
-    private Date coinDate;
+    private LocalDate coinDate;
 
     @Column(name = "price", precision = 18, scale = 4)
     private BigDecimal price;
-
-    @OneToMany(mappedBy = "btcPrice", cascade = CascadeType.ALL)
-    private List<Prediction> predictionList = new ArrayList<>();
 }
