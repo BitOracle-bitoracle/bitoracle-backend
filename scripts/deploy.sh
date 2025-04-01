@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPOSITORY=/home/ubuntu  #1
-PROJECT_NAME=2024_DEPLOY-SESSION
+PROJECT_NAME=bitoracle-backend
 
 cd $REPOSITORY/$PROJECT_NAME/  #2
 
