@@ -22,4 +22,7 @@ public class Coin {
     private BigDecimal quantity;
 
     // 포폴쪽이 확정되지 않아서 아직
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private Portfolio portfolio;
 }

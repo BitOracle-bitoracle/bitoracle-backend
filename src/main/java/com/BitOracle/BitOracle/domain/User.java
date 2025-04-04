@@ -19,6 +19,9 @@ public class User {
     private Long userId;
     @Column(nullable = false, name = "user_name")
     private String userName;
+
+    @Column(nullable = false, name = "point")
+    private Integer point;
 //    @Column(nullable = false, name = "user_email")
 //    private String userEmail;
 //    @Column(nullable = false, name = "google_id")
@@ -38,4 +41,7 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Record record;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private Portfolio portfolio;
 }
