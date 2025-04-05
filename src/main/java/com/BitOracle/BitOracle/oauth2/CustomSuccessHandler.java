@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.BitOracle.BitOracle.domain.RefreshEntity;
 import com.BitOracle.BitOracle.jwt.JWTUtil;
 import com.BitOracle.BitOracle.repository.RefreshRepository;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -50,7 +52,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         //응답 설정
         response.setHeader("access", access);
-        response.addCookie(createCookie("refresh", refresh));
+        addCookieWithSameSite(response, "refresh", refresh, 86400000L);
         response.setStatus(HttpStatus.OK.value());
         response.sendRedirect("https://bitoracle.netlify.app");
 
@@ -96,6 +98,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshEntity.setExpiration(date.toString());
 
         refreshRepository.save(refreshEntity);
+    }
+
+    private void addCookieWithSameSite(HttpServletResponse response, String name, String value, long maxAge) {
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .maxAge(maxAge)
+                .httpOnly(true)
+                .secure(true) // HTTPS에서만 전송
+                .sameSite("None") // 크로스 사이트에서 작동 가능
+                .path("/")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
 }
