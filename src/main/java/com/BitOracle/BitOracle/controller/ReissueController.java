@@ -9,11 +9,11 @@ import com.BitOracle.BitOracle.jwt.JWTUtil;
 import com.BitOracle.BitOracle.repository.RefreshRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
 
 @RequestMapping("/api")
 @RestController
@@ -90,6 +90,25 @@ public class ReissueController {
         response.addCookie(createCookie("refresh", newRefresh));
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/auth/init")
+    public ResponseEntity<?> getAccessToken(@CookieValue("refresh") String refreshToken) {
+        if (!jwtUtil.isExpired(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
+
+        String username = jwtUtil.getUsername(refreshToken);
+        String role = jwtUtil.getRole(refreshToken);
+
+        // DB에 저장된 refresh랑 일치하는지도 확인하는 게 안전
+        Optional<RefreshEntity> saved = refreshRepository.findByUsername(username);
+        if (saved.isEmpty() || !saved.get().getRefresh().equals(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token mismatch");
+        }
+
+        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
+        return ResponseEntity.ok().header("Authorization", newAccess).body(Map.of("access", newAccess));
     }
 
     private Cookie createCookie(String key, String value) {

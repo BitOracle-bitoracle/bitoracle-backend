@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
                 // 개발 환경: 프론트 서버 주소 허용
                 .allowedOrigins(
                         "http://localhost:3000",         // 로컬 프론트
-                        "https://your-frontend.com"       // 배포된 프론트 주소
+                        "https://bitoracle.netlify.app/"       // 배포된 프론트 주소
                 )
                 .allowedMethods(
                         HttpMethod.GET.name(),
