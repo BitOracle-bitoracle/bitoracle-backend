@@ -91,7 +91,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(
-                                "/", "/reissue",                         // 기본 허용
+                                "/", "/reissue", "/api/auth/init",                        // 기본 허용
                                 "/v3/api-docs/**",                       // Swagger 문서 JSON
                                 "/swagger-ui/**", "/swagger-ui.html",    // Swagger UI
                                 "/swagger-resources/**", "/webjars/**"   // Swagger 리소스
