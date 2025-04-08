@@ -94,7 +94,8 @@ public class SecurityConfig {
                                 "/", "/reissue", "/api/auth/init",   // 기본 허용
                                 "/v3/api-docs/**",                       // Swagger 문서 JSON
                                 "/swagger-ui/**", "/swagger-ui.html",    // Swagger UI
-                                "/swagger-resources/**", "/webjars/**"   // Swagger 리소스
+                                "/swagger-resources/**", "/webjars/**",   // Swagger 리소스
+                                "/api/predict/midnight"             // 로그인 상관 없이 허용되는 api
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
