@@ -11,6 +11,7 @@ public class BtcPriceConverter {
 
     public static BtcPriceResponseDto.BtcPriceMidnightResponseDto toBtcPriceMidnightResponseDto (BtcPrice btcPrice){
         return BtcPriceResponseDto.BtcPriceMidnightResponseDto.builder()
+                .today(btcPrice.getCoinDate())
                 .price(btcPrice.getPrice())
                 .build();
     }
