@@ -1,5 +1,6 @@
 package com.BitOracle.BitOracle.domain;
 
+import com.BitOracle.BitOracle.common.BaseEntity;
 import com.BitOracle.BitOracle.domain.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
