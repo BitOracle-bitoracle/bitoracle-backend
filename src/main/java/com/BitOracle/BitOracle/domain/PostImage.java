@@ -18,4 +18,6 @@ public class PostImage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    private String imgUrl; // 실제 파일은 /uploads/image.png 같은 곳에 저장
 }

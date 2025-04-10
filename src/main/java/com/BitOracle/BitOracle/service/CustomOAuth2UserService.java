@@ -2,7 +2,7 @@ package com.BitOracle.BitOracle.service;
 
 import com.BitOracle.BitOracle.domain.UserEntity;
 import com.BitOracle.BitOracle.dto.*;
-import com.BitOracle.BitOracle.repository.UserRepository;
+import com.BitOracle.BitOracle.repository.UserEntityRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserRepository userRepository;
+    private final UserEntityRepository userRepository;
 
-    public CustomOAuth2UserService(UserRepository userRepository){
+    public CustomOAuth2UserService(UserEntityRepository userRepository){
         this.userRepository = userRepository;
     }
 

@@ -23,7 +23,7 @@ public class Post {
     @Column(nullable = false, name = "title")
     private String title;
     @Column(name = "like_count")
-    private int likeCount;
+    private int likeCount = 0;
     @Column(name = "post_type")
     @Enumerated(EnumType.STRING)
     private PostType postType;
