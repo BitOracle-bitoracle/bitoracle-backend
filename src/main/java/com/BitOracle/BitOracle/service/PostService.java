@@ -3,7 +3,8 @@ package com.BitOracle.BitOracle.service;
 import com.BitOracle.BitOracle.domain.Post;
 import com.BitOracle.BitOracle.domain.PostImage;
 import com.BitOracle.BitOracle.domain.User;
-import com.BitOracle.BitOracle.dto.PostSaveDto;
+import com.BitOracle.BitOracle.dto.PostSaveReqDto;
+import com.BitOracle.BitOracle.dto.PostSaveResDto;
 import com.BitOracle.BitOracle.repository.PostImageRepository;
 import com.BitOracle.BitOracle.repository.PostRepository;
 import com.BitOracle.BitOracle.repository.UserRepository;
@@ -40,7 +41,7 @@ public class PostService {
     private final PostImageRepository postImageRepository;
 
     //일반 게시글 추가
-    public void save(PostSaveDto postSaveDto, List<MultipartFile> uploadFiles, User user) {
+    public PostSaveResDto save(PostSaveReqDto postSaveDto, List<MultipartFile> uploadFiles, User user) {
         //dto->entity
         Post post = postSaveDto.toEntity(user);
         //if 파일 있으면
@@ -60,7 +61,13 @@ public class PostService {
             post.setPostImageList(postImageList);
         }
 
-        postRepository.save(post);
+        Post saved = postRepository.save(post);
+        return PostSaveResDto.builder()
+                .id(saved.getPostId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .authorName(user.getUserName())
+                .build();
     }
 
     public List<String> upload(List<MultipartFile> multipartFiles){

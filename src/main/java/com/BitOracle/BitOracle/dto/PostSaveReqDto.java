@@ -17,7 +17,7 @@ import java.util.Optional;
 @Builder
 @Getter
 @Setter
-public class PostSaveDto {
+public class PostSaveReqDto {
     @NotBlank(message = "제목을 입력해주세요")
     private String title;
     @NotBlank(message = "내용을 입력해주세요")
