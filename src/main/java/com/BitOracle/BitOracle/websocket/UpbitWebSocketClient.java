@@ -19,6 +19,6 @@ public class UpbitWebSocketClient {
     public void connect() {
         WebSocketClient client = new StandardWebSocketClient();
         client.doHandshake(handler, "wss://api.upbit.com/websocket/v1");
-        log.info("업비트 api WebSocket 연결됨@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        //log.info("업비트 api WebSocket 연결됨@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     }
 }

@@ -46,7 +46,7 @@ public class UpbitWebSocketHandler extends BinaryWebSocketHandler {
         data.put("price", price);
         data.put("date", date);
         data.put("time", time);
-        log.info("📡 받은 바이너리 데이터: " + data);
+        //log.info("📡 받은 바이너리 데이터: " + data);
         // 프론트에 broadcast (STOMP 채널)
         messagingTemplate.convertAndSend("/sub/trade", data);
     }
