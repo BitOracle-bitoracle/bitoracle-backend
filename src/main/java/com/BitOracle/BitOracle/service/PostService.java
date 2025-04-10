@@ -3,6 +3,7 @@ package com.BitOracle.BitOracle.service;
 import com.BitOracle.BitOracle.domain.Post;
 import com.BitOracle.BitOracle.domain.PostImage;
 import com.BitOracle.BitOracle.domain.User;
+import com.BitOracle.BitOracle.dto.PostResDto;
 import com.BitOracle.BitOracle.dto.PostSaveReqDto;
 import com.BitOracle.BitOracle.dto.PostSaveResDto;
 import com.BitOracle.BitOracle.repository.PostImageRepository;
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -108,6 +110,21 @@ public class PostService {
     //파일 삭제
     public void deleteFile(String fileName){
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    }
+
+
+    //list 전체글 조회
+    public List<PostResDto> findAll(){
+        return postRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(post -> PostResDto.builder()
+                        .id(post.getPostId())
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .writer(post.getUser().getUserName()) // 작성자 이름
+                        .createdAt(post.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList()); //리스트로 반환
     }
 
 }

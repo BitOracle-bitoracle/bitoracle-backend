@@ -2,6 +2,7 @@ package com.BitOracle.BitOracle.controller;
 
 import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
+import com.BitOracle.BitOracle.dto.PostResDto;
 import com.BitOracle.BitOracle.dto.PostSaveReqDto;
 import com.BitOracle.BitOracle.dto.PostSaveResDto;
 import com.BitOracle.BitOracle.repository.UserRepository;
@@ -35,5 +36,11 @@ public class PostController {
         userRepository.save(user);
         PostSaveResDto resDto = postService.save(postSaveReqDto, images, user);
         return DataResponseDto.of(resDto,"게시글 등록되었습니다.");
+    }
+
+    @GetMapping
+    public DataResponseDto<List<PostResDto>> getAllPosts(){
+        List<PostResDto> posts = postService.findAll();
+        return DataResponseDto.of(posts,"전체 글 조회@@");
     }
 }
