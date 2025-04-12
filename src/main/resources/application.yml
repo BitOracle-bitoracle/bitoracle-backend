@@ -21,6 +21,15 @@ spring:
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
 
+  openai:
+    secret: ${OPEN_AI_KEY}
+
+  cryptopanic:
+    key: ${CRYPTOPANIC_KEY}
+
+  deepsearch:
+    key: ${DEEPSEARCH_KEY}
+
   security:
     oauth2:
       client:
@@ -62,7 +71,7 @@ spring:
       region:
         static: ap-northeast-2  # 버킷의 리전
       s3:
-        bucket: bit-oracle-bucket  # 버킷 이름
+        bucket: bitoracle-bucket  # 버킷 이름
       stack:
         auto: false
   servlet:
