@@ -1,6 +1,6 @@
 package com.BitOracle.BitOracle.domain;
 
-import com.BitOracle.BitOracle.domain.enums.PostType;
+import com.BitOracle.BitOracle.domain.enums.NewsType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +21,9 @@ public class News {
     private String  newsContent;
     @Column(name = "news_url")
     private String newsUrl;
-    @Column(name = "post_type")
+    @Column(name = "image_url")
+    private String imageUrl;
+    @Column(name = "news_type")
     @Enumerated(EnumType.STRING)
-    private PostType postType;
+    private NewsType newsType;
 }
