@@ -3,6 +3,7 @@ package com.BitOracle.BitOracle.service;
 import com.BitOracle.BitOracle.domain.Post;
 import com.BitOracle.BitOracle.domain.PostImage;
 import com.BitOracle.BitOracle.domain.User;
+import com.BitOracle.BitOracle.dto.PostResDto;
 import com.BitOracle.BitOracle.dto.PostSaveReqDto;
 import com.BitOracle.BitOracle.dto.PostSaveResDto;
 import com.BitOracle.BitOracle.repository.PostImageRepository;
@@ -16,6 +17,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +29,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -108,6 +112,19 @@ public class PostService {
     //파일 삭제
     public void deleteFile(String fileName){
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    }
+
+
+    //list 전체글 조회
+    public Page<PostResDto> findAll(Pageable pageable){
+        return postRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(post -> PostResDto.builder()
+                        .id(post.getPostId())
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .writer(post.getUser().getUserName()) // 작성자 이름
+                        .createdAt(post.getCreatedAt())
+                        .build());
     }
 
 }

@@ -2,6 +2,7 @@ package com.BitOracle.BitOracle.controller;
 
 import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
+import com.BitOracle.BitOracle.dto.PostResDto;
 import com.BitOracle.BitOracle.dto.PostSaveReqDto;
 import com.BitOracle.BitOracle.dto.PostSaveResDto;
 import com.BitOracle.BitOracle.repository.UserRepository;
@@ -10,6 +11,10 @@ import com.BitOracle.BitOracle.service.PostService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -35,5 +40,16 @@ public class PostController {
         userRepository.save(user);
         PostSaveResDto resDto = postService.save(postSaveReqDto, images, user);
         return DataResponseDto.of(resDto,"게시글 등록되었습니다.");
+    }
+
+    @GetMapping
+    public DataResponseDto<Page<PostResDto>> getAllPosts(@RequestParam(defaultValue = "0",name = "page")int page,
+                                                         @RequestParam(defaultValue = "10",name = "size") int size,
+                                                         @RequestParam(defaultValue = "createdAt",name="sortBy") String sortBy,
+                                                         @RequestParam(defaultValue = "desc",name="desc") String direction){
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<PostResDto> posts = postService.findAll(pageable);
+        return DataResponseDto.of(posts,"전체 글 조회@@");
     }
 }
