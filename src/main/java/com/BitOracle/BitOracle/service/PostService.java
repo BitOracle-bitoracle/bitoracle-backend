@@ -17,6 +17,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -114,17 +116,15 @@ public class PostService {
 
 
     //list 전체글 조회
-    public List<PostResDto> findAll(){
-        return postRepository.findAllByOrderByCreatedAtDesc()
-                .stream()
+    public Page<PostResDto> findAll(Pageable pageable){
+        return postRepository.findAllByOrderByCreatedAtDesc(pageable)
                 .map(post -> PostResDto.builder()
                         .id(post.getPostId())
                         .title(post.getTitle())
                         .content(post.getContent())
                         .writer(post.getUser().getUserName()) // 작성자 이름
                         .createdAt(post.getCreatedAt())
-                        .build())
-                .collect(Collectors.toList()); //리스트로 반환
+                        .build());
     }
 
 }
