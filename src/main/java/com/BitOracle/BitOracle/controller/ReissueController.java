@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -106,8 +107,11 @@ public class ReissueController {
             System.out.println("username: " + jwtUtil.getUsername(refreshToken));
             System.out.println("role: " + jwtUtil.getRole(refreshToken));
 
-            Optional<RefreshEntity> saved = refreshRepository.findByUsername(username);
-            if (saved.isEmpty() || !saved.get().getRefresh().equals(refreshToken)) {
+            List<RefreshEntity> refreshEntities = refreshRepository.findAllByUsername(username);
+            boolean match = refreshEntities.stream()
+                    .anyMatch(entity -> entity.getRefresh().equals(refreshToken));
+
+            if (!match) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token mismatch");
             }
 
