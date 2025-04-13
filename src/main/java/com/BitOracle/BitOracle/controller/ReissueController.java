@@ -94,29 +94,37 @@ public class ReissueController {
 
     @GetMapping("/auth/init")
     public ResponseEntity<?> getAccessToken(@CookieValue("refresh") String refreshToken) {
-        if (!jwtUtil.isExpired(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        try {
+            if (jwtUtil.isExpired(refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token expired");
+            }
+
+            String username = jwtUtil.getUsername(refreshToken);
+            String role = jwtUtil.getRole(refreshToken);
+
+            System.out.println("Refresh 토큰: " + refreshToken);
+            System.out.println("username: " + jwtUtil.getUsername(refreshToken));
+            System.out.println("role: " + jwtUtil.getRole(refreshToken));
+
+            Optional<RefreshEntity> saved = refreshRepository.findByUsername(username);
+            if (saved.isEmpty() || !saved.get().getRefresh().equals(refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token mismatch");
+            }
+
+            String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
+            return ResponseEntity.ok().header("Authorization", newAccess).body(Map.of("access", newAccess));
+        } catch (Exception e) {
+            e.printStackTrace(); // 혹은 log.error("init 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류 발생: " + e.getMessage());
         }
-
-        String username = jwtUtil.getUsername(refreshToken);
-        String role = jwtUtil.getRole(refreshToken);
-
-        // DB에 저장된 refresh랑 일치하는지도 확인하는 게 안전
-        Optional<RefreshEntity> saved = refreshRepository.findByUsername(username);
-        if (saved.isEmpty() || !saved.get().getRefresh().equals(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token mismatch");
-        }
-
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
-        return ResponseEntity.ok().header("Authorization", newAccess).body(Map.of("access", newAccess));
     }
 
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24*60*60);
-        //cookie.setSecure(true);
-        //cookie.setPath("/");
+        cookie.setSecure(true); // 로컬에서 할 때만 주석처리
+        cookie.setPath("/"); // 로컬에서 할 때만 주석처리
         cookie.setHttpOnly(true);
 
         return cookie;
