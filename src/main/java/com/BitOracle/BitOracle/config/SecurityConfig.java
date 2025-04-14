@@ -97,7 +97,8 @@ public class SecurityConfig {
                                 "/swagger-resources/**", "/webjars/**",   // Swagger 리소스
                                 "/api/predict/midnight"   ,          // 로그인 상관 없이 허용되는 api
                                 "/api/community/**",
-                                "/ws-upbit/**"
+                                "/ws-upbit/**",
+                                "/api/reply/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

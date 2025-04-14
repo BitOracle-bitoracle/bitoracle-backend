@@ -44,4 +44,9 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private Portfolio portfolio;
+
+    public void addReply(Reply reply){
+        //comment의 writer 설정은 comment에서 함
+        replyList.add(reply);
+    }
 }
