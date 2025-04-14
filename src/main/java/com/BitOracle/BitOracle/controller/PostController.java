@@ -2,9 +2,7 @@ package com.BitOracle.BitOracle.controller;
 
 import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
-import com.BitOracle.BitOracle.dto.PostResDto;
-import com.BitOracle.BitOracle.dto.PostSaveReqDto;
-import com.BitOracle.BitOracle.dto.PostSaveResDto;
+import com.BitOracle.BitOracle.dto.*;
 import com.BitOracle.BitOracle.repository.UserRepository;
 import com.BitOracle.BitOracle.response.DataResponseDto;
 import com.BitOracle.BitOracle.service.PostService;
@@ -31,7 +29,9 @@ public class PostController {
     private final UserRepository userRepository;
 
     @PostMapping(value = "/post",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public DataResponseDto<PostSaveResDto> savePost(@RequestPart(value = "post") @Parameter(schema =@Schema(type = "string", format = "binary")) PostSaveReqDto postSaveReqDto, @RequestPart(value = "images",required = false) List<MultipartFile> images)
+    public DataResponseDto<PostSaveResDto> savePost(@RequestPart(value = "post") @Parameter(schema =@Schema(type = "string", format = "binary")) PostSaveReqDto postSaveReqDto,
+                                                    @RequestPart(value = "images",required = false) List<MultipartFile> images
+                                                    )
     {
         User user = User.builder()
                 .userName("진서")
@@ -46,10 +46,15 @@ public class PostController {
     public DataResponseDto<Page<PostResDto>> getAllPosts(@RequestParam(defaultValue = "0",name = "page")int page,
                                                          @RequestParam(defaultValue = "10",name = "size") int size,
                                                          @RequestParam(defaultValue = "createdAt",name="sortBy") String sortBy,
-                                                         @RequestParam(defaultValue = "desc",name="desc") String direction){
+                                                         @RequestParam(defaultValue = "desc",name="direction") String direction){
         Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<PostResDto> posts = postService.findAll(pageable);
         return DataResponseDto.of(posts,"전체 글 조회@@");
     }
+
+    //댓글 추가
+    //@PostMapping("/post/{postId}/comment")
+
+
 }
