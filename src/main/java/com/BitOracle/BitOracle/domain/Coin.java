@@ -1,5 +1,6 @@
 package com.BitOracle.BitOracle.domain;
 
+import com.BitOracle.BitOracle.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Coin {
+public class Coin extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coin_id")
