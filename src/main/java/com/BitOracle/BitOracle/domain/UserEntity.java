@@ -1,5 +1,6 @@
 package com.BitOracle.BitOracle.domain;
 
+import com.BitOracle.BitOracle.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +11,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class UserEntity {
+public class UserEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

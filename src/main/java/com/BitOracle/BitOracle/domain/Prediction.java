@@ -1,5 +1,6 @@
 package com.BitOracle.BitOracle.domain;
 
+import com.BitOracle.BitOracle.common.BaseEntity;
 import com.BitOracle.BitOracle.domain.enums.PostType;
 import com.BitOracle.BitOracle.domain.enums.PredictType;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Prediction {
+public class Prediction extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "predict_id")
