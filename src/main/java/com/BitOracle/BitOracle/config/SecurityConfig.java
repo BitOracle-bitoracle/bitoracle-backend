@@ -95,7 +95,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",                       // Swagger 문서 JSON
                                 "/swagger-ui/**", "/swagger-ui.html",    // Swagger UI
                                 "/swagger-resources/**", "/webjars/**",   // Swagger 리소스
-                                "/api/predict/midnight", "/api/test/**", "api/news/main",         // 로그인 상관 없이 허용되는 api
+                                "/api/predict/midnight", "/api/test/**", "api/news/**",         // 로그인 상관 없이 허용되는 api
                                 "/api/community/**",
                                 "/ws-upbit/**",
                                 "/api/reply/**"

@@ -22,4 +22,16 @@ public class NewsController {
         List<NewsResponseDto.MainNewsResponseDto> responseDto = newsService.getMainNews();
         return DataResponseDto.of(responseDto, "오늘의 뉴스 6개를 조회했습니다.");
     }
+
+    @GetMapping(value = "/news/goodNews")
+    public DataResponseDto<List<NewsResponseDto.GoodBadNewsResponseDto>> getGoodNews(){
+        List<NewsResponseDto.GoodBadNewsResponseDto> responseDto = newsService.getGoodNews();
+        return DataResponseDto.of(responseDto, "호재 뉴스를 모두 조회했습니다.");
+    }
+
+    @GetMapping(value = "/news/badNews")
+    public DataResponseDto<List<NewsResponseDto.GoodBadNewsResponseDto>> getBadNews(){
+        List<NewsResponseDto.GoodBadNewsResponseDto> responseDto = newsService.getBadNews();
+        return DataResponseDto.of(responseDto, "악재 뉴스를 모두 조회했습니다.");
+    }
 }
