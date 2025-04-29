@@ -36,4 +36,12 @@ public class NewsResponseDto {
         @JsonProperty("news_url")
         private String newsUrl;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class kwResponseDto {
+        private String kw;
+    }
 }

@@ -24,4 +24,7 @@ public class BtcPrice extends BaseEntity {
 
     @Column(name = "price", precision = 18, scale = 4)
     private BigDecimal price;
+
+    @Column(name = "keyword")
+    private String keyword;
 }

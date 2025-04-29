@@ -34,4 +34,13 @@ public class NewsController {
         List<NewsResponseDto.GoodBadNewsResponseDto> responseDto = newsService.getBadNews();
         return DataResponseDto.of(responseDto, "악재 뉴스를 모두 조회했습니다.");
     }
+
+    @GetMapping(value = "/news/kw")
+    public DataResponseDto<NewsResponseDto.kwResponseDto> getKeyword(){
+        String kw = newsService.getKeyword();
+        NewsResponseDto.kwResponseDto responseDto = NewsResponseDto.kwResponseDto.builder()
+                .kw(kw)
+                .build();
+        return DataResponseDto.of(responseDto, "오늘의 키워드를 조회했습니다.");
+    }
 }
