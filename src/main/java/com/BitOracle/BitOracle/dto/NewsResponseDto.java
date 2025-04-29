@@ -23,4 +23,17 @@ public class NewsResponseDto {
         @JsonProperty("news_type")
         private NewsType newsType;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GoodBadNewsResponseDto {
+        @JsonProperty("news_title")
+        private String newsTitle;
+        @JsonProperty("news_content")
+        private String newsContent;
+        @JsonProperty("news_url")
+        private String newsUrl;
+    }
 }
