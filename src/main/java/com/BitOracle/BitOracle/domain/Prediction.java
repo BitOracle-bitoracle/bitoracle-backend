@@ -20,9 +20,6 @@ public class Prediction extends BaseEntity {
     @Column(name = "predict_id")
     private Long predictId;
 
-    @Column(name = "predict_time")
-    private Date predictTime;
-
     @Column(name = "is_correct")
     private Boolean isCorrect;
 

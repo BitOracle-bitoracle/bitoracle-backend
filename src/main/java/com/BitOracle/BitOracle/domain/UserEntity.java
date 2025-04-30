@@ -1,10 +1,7 @@
 package com.BitOracle.BitOracle.domain;
 
 import com.BitOracle.BitOracle.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,4 +17,10 @@ public class UserEntity extends BaseEntity {
     private String name;
     private String email;
     private String role;
+
+    // UserEntity는 로그인 정보만 관리, User는 다른 테이블들과 관계를 가지도록 구분하기 위해
+    // UserEntity가 User를 참조하도록 설계
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

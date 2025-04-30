@@ -25,7 +25,7 @@ public class Replycontroller {
                 .createdAt(reply.getCreatedAt())
                 .content(reply.getReplyContent())
                 .postId(reply.getPost().getPostId())
-                .userName(reply.getUser().getUserName())
+                .userName(reply.getUser().getNickname())
                 .parentId(reply.getParent() != null ? reply.getParent().getReplyId() : null)
                 .isRemoved(reply.isRemoved())
                 .build();
