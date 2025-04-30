@@ -70,7 +70,7 @@ public class PostService {
                 .id(saved.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .authorName(user.getUserName())
+                .authorName(user.getNickname())
                 .build();
     }
 
@@ -122,7 +122,7 @@ public class PostService {
                         .id(post.getPostId())
                         .title(post.getTitle())
                         .content(post.getContent())
-                        .writer(post.getUser().getUserName()) // 작성자 이름
+                        .writer(post.getUser().getNickname()) // 작성자 이름
                         .createdAt(post.getCreatedAt())
                         .build());
     }

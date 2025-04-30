@@ -23,7 +23,7 @@ public class ReplyService {
 
     public Reply saveReply(Long postId, ReplySaveReqDto replySaveReqDto){
         Reply reply = replySaveReqDto.toEntity(); //내용
-        reply.setUser(userRepository.findByUserName("admin")); //임의 테스트 //유저저장
+        reply.setUser(userRepository.findByNickname("admin")); //임의 테스트 //유저저장
         reply.setPost(postRepository.findByPostId(postId));//포스트 저장
         return replyRepository.save(reply);
     }
@@ -31,7 +31,7 @@ public class ReplyService {
     //대댓글 저장
     public void saveRe_Reply(Long postId , Long parentId, ReplySaveReqDto replySaveReqDto){
         Reply reply = replySaveReqDto.toEntity();
-        reply.setUser(userRepository.findByUserName("admin"));
+        reply.setUser(userRepository.findByNickname("admin"));
         reply.setPost(postRepository.findByPostId(postId));
         reply.setParent(replyRepository.findById(parentId).get());
         replyRepository.save(reply);

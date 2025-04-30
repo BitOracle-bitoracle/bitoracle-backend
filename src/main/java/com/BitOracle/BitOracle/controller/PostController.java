@@ -2,6 +2,7 @@ package com.BitOracle.BitOracle.controller;
 
 import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
+import com.BitOracle.BitOracle.domain.enums.UserType;
 import com.BitOracle.BitOracle.dto.*;
 import com.BitOracle.BitOracle.repository.UserRepository;
 import com.BitOracle.BitOracle.response.DataResponseDto;
@@ -34,7 +35,8 @@ public class PostController {
                                                     )
     {
         User user = User.builder()
-                .userName("진서")
+                .nickname("jinseo")
+                .userType(UserType.USER)
                 .point(1)
                 .build();
         userRepository.save(user);

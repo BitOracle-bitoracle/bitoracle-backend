@@ -1,6 +1,7 @@
 package com.BitOracle.BitOracle.domain;
 
 import com.BitOracle.BitOracle.common.BaseEntity;
+import com.BitOracle.BitOracle.domain.enums.UserType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,17 +19,16 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
-    @Column(nullable = false, name = "user_name")
-    private String userName;
+
+    @Column(nullable = false)
+    private String nickname;
+
+    @Column(name = "user_type")
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
 
     @Column(nullable = false, name = "point")
     private Integer point;
-//    @Column(nullable = false, name = "user_email")
-//    private String userEmail;
-//    @Column(nullable = false, name = "google_id")
-//    private String googleId;
-//    @Column(nullable = false, name = "img_url")
-//    private String imgUrl;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Reply> replyList = new ArrayList<>();

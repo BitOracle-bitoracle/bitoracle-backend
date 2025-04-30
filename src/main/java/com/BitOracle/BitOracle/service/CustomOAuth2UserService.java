@@ -1,8 +1,11 @@
 package com.BitOracle.BitOracle.service;
 
+import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
+import com.BitOracle.BitOracle.domain.enums.UserType;
 import com.BitOracle.BitOracle.dto.*;
 import com.BitOracle.BitOracle.repository.UserEntityRepository;
+import com.BitOracle.BitOracle.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -13,9 +16,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserEntityRepository userRepository;
+    private final UserEntityRepository userEntityRepository;
+    private final UserRepository userRepository;
 
-    public CustomOAuth2UserService(UserEntityRepository userRepository){
+    public CustomOAuth2UserService(UserEntityRepository userEntityRepository, UserRepository userRepository){
+        this.userEntityRepository = userEntityRepository;
         this.userRepository = userRepository;
     }
 
@@ -37,11 +42,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return null;
         }
 
-        // 로그인 완료 시 로직은 추후 작성
-
         // 네이버와 구글에서 온 유저 이름을 우리는 구분해서 관리해줘야 하기 때문에
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-        UserEntity existData = userRepository.findByUsername(username);
+        UserEntity existData = userEntityRepository.findByUsername(username);
 
         if (existData == null){
             UserEntity userEntity = new UserEntity();
@@ -50,7 +53,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userEntity.setName(oAuth2Response.getName());
             userEntity.setRole("ROLE_USER");
 
-            userRepository.save(userEntity);
+            User user = User.builder()
+                    .nickname(oAuth2Response.getEmail().substring(0, oAuth2Response.getEmail().indexOf("@")))
+                    .point(0)
+                    .userType(UserType.USER)
+                    .build();
+
+            userRepository.save(user);
+
+            userEntity.setUser(user);
+            userEntityRepository.save(userEntity);
 
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(username);
@@ -64,7 +76,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             existData.setEmail(oAuth2Response.getEmail());
             existData.setName(oAuth2Response.getName());
 
-            userRepository.save(existData);
+            userEntityRepository.save(existData);
+
+            User existUser = existData.getUser();
+            existUser.setNickname(oAuth2Response.getEmail().substring(0, oAuth2Response.getEmail().indexOf("@")));
+
+            userRepository.save(existUser);
 
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(existData.getUsername());
