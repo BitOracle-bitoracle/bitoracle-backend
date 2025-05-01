@@ -30,10 +30,14 @@ public class User extends BaseEntity {
     @Column(nullable = false, name = "point")
     private Integer point;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Reply> replyList = new ArrayList<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    //==회원탈퇴 -> 작성 게시물, 댓글 모두 삭제 == //
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Likes> likeList = new ArrayList<>();
     // 포폴 쪽은 아직 추가 안함
@@ -49,5 +53,17 @@ public class User extends BaseEntity {
     public void addReply(Reply reply){
         //comment의 writer 설정은 comment에서 함
         replyList.add(reply);
+    }
+
+
+    //== 연관관계 메서드 ==//
+    public void addPost(Post post){
+        //post의 writer 설정은 post에서 함
+        postList.add(post);
+    }
+
+    public void addComment(Reply comment){
+        //comment의 writer 설정은 comment에서 함
+        replyList.add(comment);
     }
 }
