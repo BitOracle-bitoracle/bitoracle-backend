@@ -14,13 +14,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +33,17 @@ public class PostController {
     private final PostService postService;
     private final UserRepository userRepository;
 
+    @GetMapping("/api/user/me")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "username", userDetails.getUsername(),
+                "roles", userDetails.getAuthorities()
+        ));
+    }
     @PostMapping(value = "/post",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DataResponseDto<PostSaveResDto> savePost(@RequestPart(value = "post") @Parameter(schema =@Schema(type = "string", format = "binary")) PostSaveReqDto postSaveReqDto,
                                                     @RequestPart(value = "images",required = false) List<MultipartFile> images
@@ -53,6 +68,11 @@ public class PostController {
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<PostResDto> posts = postService.findAll(pageable);
         return DataResponseDto.of(posts,"전체 글 조회@@");
+    }
+    //단건조회
+    @GetMapping("/post/{postId}")
+    public DataResponseDto<PostInfoDto> getPostInfo(@PathVariable("postId")Long postId) {
+        return DataResponseDto.of(postService.getPostInfo(postId));
     }
 
     //댓글 추가

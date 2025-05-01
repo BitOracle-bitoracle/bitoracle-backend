@@ -37,7 +37,7 @@ public class Reply extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Reply parent;
-
+    @Builder.Default
     @OneToMany(mappedBy = "parent" , cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Reply> childList = new ArrayList<>();
 
@@ -95,6 +95,23 @@ public class Reply extends BaseEntity {
                 .filter(isRemove -> !isRemove)//지워졌으면 true, 안지워졌으면 false이다. 따라서 filter에 걸러지는 것은 false인 녀석들이고, 있다면 false를 없다면 orElse를 통해 true를 반환한다.
                 .findAny()//지워지지 않은게 하나라도 있다면 false를 반환
                 .orElse(true);//모두 지워졌다면 true를 반환
+    }
+
+
+    //== 연관관계 편의 메서드 ==//
+    public void confirmWriter(User writer) {
+        this.user = writer;
+        writer.addComment(this);
+    }
+
+    public void confirmPost(Post post) {
+        this.post = post;
+        post.addComment(this);
+    }
+
+    public void confirmParent(Reply parent){
+        this.parent = parent;
+        parent.addChild(this);
     }
 
 }

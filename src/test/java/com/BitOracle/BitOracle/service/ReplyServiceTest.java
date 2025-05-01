@@ -1,5 +1,6 @@
 package com.BitOracle.BitOracle.service;
 
+import com.BitOracle.BitOracle.controller.NewsController;
 import com.BitOracle.BitOracle.domain.Reply;
 import com.BitOracle.BitOracle.repository.ReplyRepository;
 import com.amazonaws.services.s3.AmazonS3;
@@ -18,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test") // application-test.yml 적용
+@MockBean(OpenAiService.class) // 또는 NewsService, NewsController 등을 mock 처리
+@MockBean(NewsController.class) // 또는 NewsService, NewsController 등을 mock 처리
+@MockBean(NewsService.class) // 또는 NewsService, NewsController 등을 mock 처리
 @SpringBootTest
 @Transactional
 class ReplyServiceTest {
@@ -89,7 +93,7 @@ class ReplyServiceTest {
         Assertions.assertThat(replyRepository.findAll().size()).isSameAs(0);
         //assertThat( assertThrows(Exception.class, () -> replyRepository.findById(commentId)).getMessage()).isEqualTo("댓글이 없습니다.");
     }
-    
+
     //댓글 삭제
     //대댓글 존재 but 모두 삭제 됨
     //댓글과, 달려잇는 대댓글 모두 db 일괄 삭제, 화면상도 ㄴㄴ
