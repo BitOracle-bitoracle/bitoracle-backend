@@ -54,7 +54,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setHeader("access", access);
         addCookieWithSameSite(response, "refresh", refresh, 86400000L);
         response.setStatus(HttpStatus.OK.value());
-        response.sendRedirect("https://bitoracle.netlify.app");
+        response.sendRedirect("http://localhost:8080/swagger-ui/index.html");
 
 
         //OAuth2User
@@ -104,7 +104,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .maxAge(maxAge)
                 .httpOnly(true)
-                .secure(true) // HTTPS에서만 전송
+                .secure(true) // HTTPS에서만 전송, 로컬에서 테스트 시에는 주석처리!!!
                 .sameSite("None") // 크로스 사이트에서 작동 가능
                 .path("/")
                 .build();

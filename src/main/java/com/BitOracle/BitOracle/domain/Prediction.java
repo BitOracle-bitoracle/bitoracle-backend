@@ -24,11 +24,8 @@ public class Prediction extends BaseEntity {
     private Boolean isCorrect;
 
     @Column(name = "up_down")
-    private Enum UpDown;
-
-    @Column(name = "predict_type")
     @Enumerated(EnumType.STRING)
-    private PredictType predictType;
+    private PredictType upDown;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

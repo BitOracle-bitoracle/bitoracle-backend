@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum PredictType {
-    GOOD("Up"),
-    BAD("DOWN");
+    UP("UP"),
+    DOWN("DOWN");
 
     private final String predictType;
 }
