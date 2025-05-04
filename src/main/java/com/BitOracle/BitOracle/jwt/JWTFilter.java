@@ -3,6 +3,7 @@ package com.BitOracle.BitOracle.jwt;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.BitOracle.BitOracle.dto.CustomOAuth2User;
@@ -27,7 +28,17 @@ public class JWTFilter extends OncePerRequestFilter { // 한 번만 요청이 �
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // 헤더에서 access키에 담긴 토큰을 꺼냄
-        String accessToken = request.getHeader("access");
+//        String accessToken = request.getHeader("access");
+
+        String accessToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("access")) {
+                    accessToken = cookie.getValue();
+                }
+            }
+        }
+        System.out.println("access token : " + accessToken);
 
         // 토큰이 없다면 다음 필터로 넘김
         if (accessToken == null) {
@@ -38,16 +49,11 @@ public class JWTFilter extends OncePerRequestFilter { // 한 번만 요청이 �
         }
 
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-
-            //response body
+        if (jwtUtil.isExpired(accessToken)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("text/plain;charset=UTF-8");
             PrintWriter writer = response.getWriter();
             writer.print("access token expired");
-
-            //response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 다음 필터로 넘기지 않고 상태 코드를 response함, 이때 코드는 프론트와 협의
             return;
         }
 
@@ -68,6 +74,7 @@ public class JWTFilter extends OncePerRequestFilter { // 한 번만 요청이 �
 
         // username, role 값을 획득
         String username = jwtUtil.getUsername(accessToken);
+        System.out.println("username : " + username);
         String role = jwtUtil.getRole(accessToken);
 
         UserDTO userEntity = new UserDTO();

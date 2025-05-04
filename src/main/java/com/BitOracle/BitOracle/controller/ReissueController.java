@@ -127,8 +127,8 @@ public class ReissueController {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24*60*60);
-        cookie.setSecure(true); // 로컬에서 할 때만 주석처리
-        cookie.setPath("/"); // 로컬에서 할 때만 주석처리
+//        cookie.setSecure(true); // 로컬에서 할 때만 주석처리
+//        cookie.setPath("/"); // 로컬에서 할 때만 주석처리
         cookie.setHttpOnly(true);
 
         return cookie;

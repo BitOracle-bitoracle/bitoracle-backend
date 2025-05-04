@@ -28,7 +28,7 @@ public class NewsConverter {
         return newsList.stream()
                 .map(news -> NewsResponseDto.GoodBadNewsResponseDto.builder()
                         .newsTitle(news.getNewsTitle())
-                        .newsContent(news.getNewsContent()) // 불필요시 제외
+                        .newsContent(news.getNewsContent().substring(0, 50)) // 불필요시 제외
                         .newsUrl(news.getNewsUrl())
                         .build()
                 )
