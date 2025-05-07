@@ -38,7 +38,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likeList = new ArrayList<>();
     // 포폴 쪽은 아직 추가 안함
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

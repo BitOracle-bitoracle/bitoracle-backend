@@ -1,12 +1,12 @@
 package com.BitOracle.BitOracle.service;
 
+import com.BitOracle.BitOracle.domain.Likes;
 import com.BitOracle.BitOracle.domain.Post;
 import com.BitOracle.BitOracle.domain.PostImage;
 import com.BitOracle.BitOracle.domain.User;
-import com.BitOracle.BitOracle.dto.PostInfoDto;
-import com.BitOracle.BitOracle.dto.PostResDto;
-import com.BitOracle.BitOracle.dto.PostSaveReqDto;
-import com.BitOracle.BitOracle.dto.PostSaveResDto;
+import com.BitOracle.BitOracle.dto.*;
+import com.BitOracle.BitOracle.dummy.PostSearchCondition;
+import com.BitOracle.BitOracle.repository.LikeRepository;
 import com.BitOracle.BitOracle.repository.PostImageRepository;
 import com.BitOracle.BitOracle.repository.PostRepository;
 import com.BitOracle.BitOracle.repository.UserRepository;
@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,7 @@ public class PostService {
     private String bucket; //버킷이름
     private final AmazonS3 amazonS3;
 
+    private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostImageRepository postImageRepository;
@@ -142,5 +146,35 @@ public class PostService {
          *
          */
         return new PostInfoDto(postRepository.findWithWriterByPostId(postId).get());
+    }
+
+    public PostPagingDto getSearchPostList(Pageable pageable, PostSearchCondition postSearchCondition){
+        return new PostPagingDto(postRepository.search(postSearchCondition, pageable));
+    }
+
+    //게시글 좋아요
+    @Transactional
+    public boolean likePost(User user, Long postId) {
+        Post post = postRepository.findByPostId(postId);
+
+        Optional<Likes> existing = likeRepository.findByUserAndPost(user, post);
+        if(existing.isPresent()){
+            likeRepository.delete(existing.get());
+            post.setLikeCount(post.getLikeCount() - 1);
+            return false;
+        }else{
+            Likes like = Likes.builder()
+                    .user(user)
+                    .post(post)
+                    .build();
+            likeRepository.save(like);
+            post.setLikeCount(post.getLikeCount() + 1);
+            return true;//좋추
+        }
+    }
+
+    public long getLikeCount(Long postId) {
+        Post post = postRepository.findByPostId(postId);
+        return likeRepository.countByPost(post);
     }
 }

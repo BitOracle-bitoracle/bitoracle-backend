@@ -34,7 +34,7 @@ public class Post extends BaseEntity {
     private List<Reply> replyList = new ArrayList<>();
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostImage> postImageList = new ArrayList<>();
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Likes> likeList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
