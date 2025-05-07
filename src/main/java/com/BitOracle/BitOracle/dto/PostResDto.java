@@ -1,5 +1,6 @@
 package com.BitOracle.BitOracle.dto;
 
+import com.BitOracle.BitOracle.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,4 +15,6 @@ public class PostResDto {
     private String content;
     private String writer;
     private LocalDateTime createdAt;
+
+
 }

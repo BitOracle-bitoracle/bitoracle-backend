@@ -1,15 +1,23 @@
 package com.BitOracle.BitOracle.controller;
 
+import com.BitOracle.BitOracle.converter.PredictionConverter;
+import com.BitOracle.BitOracle.domain.Prediction;
 import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
 import com.BitOracle.BitOracle.domain.enums.UserType;
 import com.BitOracle.BitOracle.dto.*;
+import com.BitOracle.BitOracle.dummy.PostSearchCondition;
+import com.BitOracle.BitOracle.jwt.JWTUtil;
+import com.BitOracle.BitOracle.repository.LikeRepository;
+import com.BitOracle.BitOracle.repository.UserEntityRepository;
 import com.BitOracle.BitOracle.repository.UserRepository;
 import com.BitOracle.BitOracle.response.DataResponseDto;
 import com.BitOracle.BitOracle.service.PostService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,34 +34,43 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/community")
 public class PostController {
+    private final JWTUtil jwtUtil;
     private final PostService postService;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
+    private final UserEntityRepository userEntityRepository;;
 
-    @GetMapping("/api/user/me")
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
-
-        return ResponseEntity.ok(Map.of(
-                "username", userDetails.getUsername(),
-                "roles", userDetails.getAuthorities()
-        ));
+    @PostMapping(value = "/user")
+    public void selectUpDown(@CookieValue("access") String authorization){
+        String token=authorization.replace("Bearer ","");
+        String name = jwtUtil.getUsername(token);
+        UserEntity userEntity = userEntityRepository.findByName(name);
+        User userEnt = userEntity.getUser();
+        Long userId = userEnt.getUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        log.info("사용자 정보 :" +  user.getNickname());
     }
+
     @PostMapping(value = "/post",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DataResponseDto<PostSaveResDto> savePost(@RequestPart(value = "post") @Parameter(schema =@Schema(type = "string", format = "binary")) PostSaveReqDto postSaveReqDto,
-                                                    @RequestPart(value = "images",required = false) List<MultipartFile> images
+                                                    @RequestPart(value = "images",required = false) List<MultipartFile> images,
+                                                    @CookieValue("access") String authorization
                                                     )
     {
-        User user = User.builder()
-                .nickname("jinseo")
-                .userType(UserType.USER)
-                .point(1)
-                .build();
+        String token=authorization.replace("Bearer ","");
+        String name = jwtUtil.getUsername(token);
+        UserEntity userEntity = userEntityRepository.findByName(name);
+        User userEnt = userEntity.getUser();
+        Long userId = userEnt.getUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        log.info("현재 사용자 : " + user.getNickname());
         userRepository.save(user);
         PostSaveResDto resDto = postService.save(postSaveReqDto, images, user);
         return DataResponseDto.of(resDto,"게시글 등록되었습니다.");
@@ -75,8 +92,27 @@ public class PostController {
         return DataResponseDto.of(postService.getPostInfo(postId));
     }
 
-    //댓글 추가
-    //@PostMapping("/post/{postId}/comment")
+    //게시글 검색 제목 or 작성자
+    @GetMapping("/search")
+    public DataResponseDto<PostPagingDto> search(Pageable pageable,
+                                    @ModelAttribute PostSearchCondition postSearchCondition){
+        return DataResponseDto.of(postService.getSearchPostList(pageable,postSearchCondition));
+    }
 
+
+    @PostMapping("/{postId}/like")
+    public DataResponseDto<LikeRes> like(@PathVariable Long postId, @CookieValue("access") String authorization){
+        String token=authorization.replace("Bearer ","");
+        String name = jwtUtil.getUsername(token);
+        UserEntity userEntity = userEntityRepository.findByName(name);
+        User userEnt = userEntity.getUser();
+        Long userId = userEnt.getUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        log.info("현재 사용자 : " + user.getNickname());
+        boolean islike = postService.likePost(user, postId);
+        long likeCount = postService.getLikeCount(postId);
+        return DataResponseDto.of(new LikeRes(islike,likeCount));
+    }
 
 }

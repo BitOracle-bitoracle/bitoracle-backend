@@ -20,15 +20,16 @@ public class PostInfoDto {
     private MemberDto writer;
     private LocalDateTime createdAt;
 
+    private List<String> postImageList; //이미지 리스트
     private List<ReplyInfoDto> replyList;
-    private List<PostImage> postImageList; //이미지 리스트
-
     public PostInfoDto(Post post){
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.content = post.getContent();
         this.likeCount = post.getLikeCount();
-        this.postImageList = post.getPostImageList();
+        this.postImageList = post.getPostImageList().stream()
+                .map(PostImage :: getImgUrl)
+                .collect(Collectors.toList());
 
         this.writer = new MemberDto(post.getUser());
 
