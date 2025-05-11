@@ -11,7 +11,7 @@ public class RealTimePriceService {
     private final ConcurrentHashMap<String,Double> priceMap = new ConcurrentHashMap<>();
 
     public void updatePrice(String coinName, double price) {
-        //log.info("Updating price for @@@@@@@@@@" + price);
+        //log.info("Updating price for @@@@@@@@@@"+coinName + price);
         priceMap.put(coinName, price);
     }
     public double getPrice(String coinName) {

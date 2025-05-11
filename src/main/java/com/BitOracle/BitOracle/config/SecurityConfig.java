@@ -30,6 +30,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
+
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil, RefreshRepository refreshRepository){
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
@@ -48,7 +49,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://localhost:8080","https://bitoracle.netlify.app")); // 프론트 서버 주소
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://localhost:8080","https://bitoracle.netlify.app","https://jiangxy.github.io","https://jiangxy.github.io/websocket-debug-tool/")); // 프론트 서버 주소
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -98,8 +99,14 @@ public class SecurityConfig {
                                 "/api/predict/midnight", "/api/test/**", "api/news/**",         // 로그인 상관 없이 허용되는 api
                                 "/api/community/**",
                                 "api/community/post","api/community/**",
-                                "/ws-upbit/**",
-                                "/api/reply/**"
+                                "/ws-upbit/**", // SockJS endpoint
+                                "/info",        // SockJS info 요청
+                                "/info/**",     // info 밑 경로도
+                                "/sub/**",       // stomp 구독 경로
+                                "/api/reply/**",
+                                "/ws-portfolio/**",
+                                "/queue/**",
+                                "/socket.html"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
