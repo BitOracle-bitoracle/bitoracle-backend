@@ -2,9 +2,10 @@ package com.BitOracle.BitOracle.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
-
+@ToString
 @Builder
 @Getter
 public class PortfolioResDto {

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>포트폴리오 WebSocket 테스트</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h2>WebSocket 포트폴리오 수신 테스트</h2>
+<pre id="output">연결 중...</pre>
+
+<script>
+    document.cookie = "access=eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoi6rmA7KeE7IScXzIxXzE0MDhf64KYIiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTc0Njk0NzY3NCwiZXhwIjoxNzQ2OTQ4Mjc0fQ.XpUi1dy7ioCDbT-RWGvFeQTbM-yTCh9ca6XUa5LkoUs; path=/"; // <-- JWT 직접 삽입
+
+    const socket = new SockJS("http://localhost:8080/ws-portfolio");
+    //const socket = new SockJS("http://localhost:8080/ws-portfolio");
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        output.innerText += "\n✅ 연결됨: " + frame;
+
+        stompClient.subscribe("/user/queue/portfolio", function (message) {
+            output.innerText += "\n📩 수신된 메시지:\n" + message.body;
+        });
+
+    }, function (error) {
+        output.innerText += "\n❌ 연결 실패: " + error;
+    });
+</script>
+</body>
+</html>
