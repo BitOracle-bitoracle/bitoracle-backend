@@ -1,17 +1,21 @@
 package com.BitOracle.BitOracle.service;
 
 import com.BitOracle.BitOracle.domain.Prediction;
+import com.BitOracle.BitOracle.domain.Record;
 import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
 import com.BitOracle.BitOracle.dto.PredictionRequestDto;
 import com.BitOracle.BitOracle.jwt.JWTUtil;
 import com.BitOracle.BitOracle.repository.PredictionRepository;
+import com.BitOracle.BitOracle.repository.RecordRepository;
 import com.BitOracle.BitOracle.repository.UserEntityRepository;
 import com.BitOracle.BitOracle.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ public class PredictionService {
     private final JWTUtil jwtUtil;
     private final UserEntityRepository userEntityRepository;
     private final UserRepository userRepository;
+    private final RecordRepository recordRepository;
 
     public Prediction selectUpDown(String authorization, PredictionRequestDto.PredictionUpDownRequestDto predictionUpDownRequestDto){
         Long userId = getUserId(authorization);
@@ -34,6 +39,24 @@ public class PredictionService {
                 .build();
 
         return predictionRepository.save(prediction);
+    }
+
+    public List<Prediction> getCalender(String authorization){
+        Long userId = getUserId(authorization);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        log.info(user.toString());
+
+        return predictionRepository.findByUser(user);
+    }
+
+    public Record getStats(String authorization){
+        Long userId = getUserId(authorization);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        log.info(user.toString());
+
+        return recordRepository.findByUser(user);
     }
 
     public Long getUserId(String authorization){

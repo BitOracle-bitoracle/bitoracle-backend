@@ -2,6 +2,7 @@ package com.BitOracle.BitOracle.controller;
 
 import com.BitOracle.BitOracle.converter.PredictionConverter;
 import com.BitOracle.BitOracle.domain.Prediction;
+import com.BitOracle.BitOracle.domain.Record;
 import com.BitOracle.BitOracle.dto.PredictionRequestDto;
 import com.BitOracle.BitOracle.dto.PredictionResponseDto;
 import com.BitOracle.BitOracle.response.DataResponseDto;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -27,5 +30,25 @@ public class PredictionController {
         PredictionResponseDto.selectUpDownResponseDto responseDto = PredictionConverter.toSelectUpDownResponseDto(prediction);
 
         return DataResponseDto.of(responseDto, "UP/DOWN 예측 정보를 저장했습니다.");
+    }
+
+    @GetMapping(value = "predict/calender")
+    public DataResponseDto<List<PredictionResponseDto.getCalenderResponseDto>> getCalender(
+            @CookieValue("access") String authorization){
+
+        List<Prediction> predictionList = predictionService.getCalender(authorization);
+        List<PredictionResponseDto.getCalenderResponseDto> responseDto = PredictionConverter.toGetCalenderResponseDto(predictionList);
+
+        return DataResponseDto.of(responseDto, "해당 유저의 달력 히스토리 조회를 위한 모든 예측 기록을 조회했습니다.");
+    }
+
+    @GetMapping(value = "predict/stats")
+    public DataResponseDto<PredictionResponseDto.getStatsResponseDto> getStats(
+            @CookieValue("access") String authorization){
+
+        Record record = predictionService.getStats(authorization);
+        PredictionResponseDto.getStatsResponseDto responseDto = PredictionConverter.toGetStatsResponseDto(record);
+
+        return DataResponseDto.of(responseDto, "해당 유저의 예측 통계 정보를 조회했습니다.");
     }
 }

@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 public class PredictionResponseDto {
 
     @Builder
@@ -20,5 +22,38 @@ public class PredictionResponseDto {
 
         @JsonProperty("up_down")
         private PredictType upDown;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getCalenderResponseDto{
+        @JsonProperty("predict_id")
+        private Long predictId;
+
+        @JsonProperty("created_at")
+        private LocalDate createdAt;
+
+        @JsonProperty("up_down")
+        private PredictType upDown;
+
+        @JsonProperty("correct")
+        private boolean correct;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getStatsResponseDto{
+        @JsonProperty("record_id")
+        private Long recordId;
+
+        private int trial;
+
+        private int success;
+
+        private int failure;
     }
 }
