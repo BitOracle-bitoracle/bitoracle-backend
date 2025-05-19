@@ -106,7 +106,12 @@ public class SecurityConfig {
                                 "/api/reply/**",
                                 "/ws-portfolio/**",
                                 "/queue/**",
-                                "/socket.html"
+                                "/socket.html",
+                                "/prediction",
+                                "/predict-now",
+                                "/real-price",
+                                "api/price/chart",
+                                "/api/predict/chart"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
