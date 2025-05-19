@@ -4,6 +4,8 @@ import com.BitOracle.BitOracle.dto.NewsResponseDto;
 import com.BitOracle.BitOracle.response.DataResponseDto;
 import com.BitOracle.BitOracle.service.NewsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,16 +25,16 @@ public class NewsController {
         return DataResponseDto.of(responseDto, "오늘의 뉴스 6개를 조회했습니다.");
     }
 
-    @GetMapping(value = "/news/goodNews")
-    public DataResponseDto<List<NewsResponseDto.GoodBadNewsResponseDto>> getGoodNews(){
-        List<NewsResponseDto.GoodBadNewsResponseDto> responseDto = newsService.getGoodNews();
-        return DataResponseDto.of(responseDto, "호재 뉴스를 모두 조회했습니다.");
+    @GetMapping("/news/goodNews")
+    public DataResponseDto<Page<NewsResponseDto.GoodBadNewsResponseDto>> getGoodNews(Pageable pageable){
+        Page<NewsResponseDto.GoodBadNewsResponseDto> responseDto = newsService.getGoodNews(pageable);
+        return DataResponseDto.of(responseDto, "호재 뉴스를 페이지로 조회했습니다.");
     }
 
-    @GetMapping(value = "/news/badNews")
-    public DataResponseDto<List<NewsResponseDto.GoodBadNewsResponseDto>> getBadNews(){
-        List<NewsResponseDto.GoodBadNewsResponseDto> responseDto = newsService.getBadNews();
-        return DataResponseDto.of(responseDto, "악재 뉴스를 모두 조회했습니다.");
+    @GetMapping("/news/badNews")
+    public DataResponseDto<Page<NewsResponseDto.GoodBadNewsResponseDto>> getBadNews(Pageable pageable){
+        Page<NewsResponseDto.GoodBadNewsResponseDto> responseDto = newsService.getBadNews(pageable);
+        return DataResponseDto.of(responseDto, "악재 뉴스를 페이지로 조회했습니다.");
     }
 
     @GetMapping(value = "/news/kw")

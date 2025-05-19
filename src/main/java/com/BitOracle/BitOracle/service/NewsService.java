@@ -9,6 +9,8 @@ import com.BitOracle.BitOracle.repository.BtcPriceRepository;
 import com.BitOracle.BitOracle.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,14 +31,14 @@ public class NewsService {
         return newsConverter.toMainNewsResponseDto(mainNewsList);
     }
 
-    public List<NewsResponseDto.GoodBadNewsResponseDto> getGoodNews() {
-        List<News> goodNewsList = newsRepository.findByNewsType(NewsType.GOOD);
-        return newsConverter.toGoodBadNewsResponseDtoList(goodNewsList);
+    public Page<NewsResponseDto.GoodBadNewsResponseDto> getGoodNews(Pageable pageable) {
+        Page<News> goodNewsPage = newsRepository.findByNewsType(NewsType.GOOD, pageable);
+        return goodNewsPage.map(newsConverter::toGoodBadNewsResponseDto);
     }
 
-    public List<NewsResponseDto.GoodBadNewsResponseDto> getBadNews() {
-        List<News> badNewsList = newsRepository.findByNewsType(NewsType.BAD);
-        return newsConverter.toGoodBadNewsResponseDtoList(badNewsList);
+    public Page<NewsResponseDto.GoodBadNewsResponseDto> getBadNews(Pageable pageable) {
+        Page<News> badNewsPage = newsRepository.findByNewsType(NewsType.BAD, pageable);
+        return badNewsPage.map(newsConverter::toGoodBadNewsResponseDto);
     }
 
     public String getKeyword() {

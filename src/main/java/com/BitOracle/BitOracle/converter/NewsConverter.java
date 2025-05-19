@@ -24,14 +24,12 @@ public class NewsConverter {
                 .collect(Collectors.toList());
     }
 
-    public List<NewsResponseDto.GoodBadNewsResponseDto> toGoodBadNewsResponseDtoList(List<News> newsList) {
-        return newsList.stream()
-                .map(news -> NewsResponseDto.GoodBadNewsResponseDto.builder()
-                        .newsTitle(news.getNewsTitle())
-                        .newsContent(news.getNewsContent().substring(0, 50)) // 불필요시 제외
-                        .newsUrl(news.getNewsUrl())
-                        .build()
-                )
-                .collect(Collectors.toList());
+    public NewsResponseDto.GoodBadNewsResponseDto toGoodBadNewsResponseDto(News news) {
+        return NewsResponseDto.GoodBadNewsResponseDto.builder()
+                .newsTitle(news.getNewsTitle())
+                .newsContent(news.getNewsTitle())
+                .newsUrl(news.getNewsUrl())
+                .createdAt(news.getCreatedAt())
+                .build();
     }
 }
