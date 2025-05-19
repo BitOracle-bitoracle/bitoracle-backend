@@ -14,7 +14,7 @@
 <button id="disconnectBtn">🔌 연결 종료</button>
 
 <script>
-    document.cookie = "access=eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoi6rmA7KeE7IScIiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTc0Njk1MDQ2OCwiZXhwIjoxNzQ2OTUxMDY4fQ.qpp5SofqfcaKoOJ8NvAlxAqhwFLjS0f7lpPf0MrDcj0; path=/"; // <-- JWT 직접 삽입
+    document.cookie = "access=eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoi6rmA7KeE7IScXzIxXzE0MDhf64KYIiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTc0NzY2NTA4MiwiZXhwIjoxNzQ3NjY1NjgyfQ.uLjVQRWScunqTeBQZS58DP0hRhh7Hpp2DmdytuhluBg; path=/"; // <-- JWT 직접 삽입
 
     const socket = new SockJS("http://localhost:8080/ws-portfolio");
     //const socket = new SockJS("http://localhost:8080/ws-portfolio");
@@ -24,7 +24,7 @@
         output.innerText += "\n✅ 연결됨: " + frame;
 
         stompClient.subscribe("/user/queue/portfolio", function (message) {
-            output.innerText += "\n📩 수신된 메시지:\n" + message.body;
+            //output.innerText += "\n📩 수신된 메시지:\n" + message.body;
             const portfolios = JSON.parse(message.body);
             output.innerText += "\n📩 수신된 포트폴리오:\n" + JSON.stringify(portfolios, null, 2);
         });

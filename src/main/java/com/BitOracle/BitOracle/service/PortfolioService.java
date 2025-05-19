@@ -131,14 +131,13 @@ public class PortfolioService {
                 });
 
         // 현재 가격 조회
-        double currentPrice = realTimePriceService.getPrice(request.getCoinName());
-        log.info("현재가 @@@@" +currentPrice);
+        double buyPrice = (request.getPrice() != null) ? request.getPrice() : realTimePriceService.getPrice(request.getCoinName());
 
         // BuyHistory 생성
         BuyHistory buyHistory = BuyHistory.builder()
                 .coin(coin)
                 .quantity(request.getQuantity())
-                .price(currentPrice)
+                .price(buyPrice)
                 .build();
         coin.getBuyHistories().add(buyHistory);
 
@@ -159,7 +158,8 @@ public class PortfolioService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 코인을 보유하고 있지 않습니다."));
 
         BigDecimal remainingSellQty = request.getQuantity();
-        double currentPrice = realTimePriceService.getPrice(request.getCoinName());
+        double currentPrice = (request.getPrice() != null) ? request.getPrice() : realTimePriceService.getPrice(request.getCoinName());
+        log.info("current price: " + currentPrice);
         double sellAmount = currentPrice * remainingSellQty.doubleValue();
 
         // 매도된 매수단가 총합

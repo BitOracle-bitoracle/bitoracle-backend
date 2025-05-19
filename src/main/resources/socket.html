@@ -8,25 +8,58 @@
 </head>
 <body>
 <h2>WebSocket 포트폴리오 수신 테스트</h2>
-<pre id="output">연결 중...</pre>
+
+<label for="token">Access Token (JWT):</label><br>
+<input type="text" id="token" style="width: 600px;" placeholder="JWT 토큰을 입력하세요" /><br><br>
+
+<button onclick="setTokenAndConnect()">Connect</button>
+<button onclick="disconnect()">Disconnect</button>
+
+<pre id="output">⏳ 준비 중...</pre>
 
 <script>
-    document.cookie = "access=eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoi6rmA7KeE7IScXzIxXzE0MDhf64KYIiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTc0Njk0NzY3NCwiZXhwIjoxNzQ2OTQ4Mjc0fQ.XpUi1dy7ioCDbT-RWGvFeQTbM-yTCh9ca6XUa5LkoUs; path=/"; // <-- JWT 직접 삽입
+    let stompClient = null;
+    let socket = null;
 
-    const socket = new SockJS("http://localhost:8080/ws-portfolio");
-    //const socket = new SockJS("http://localhost:8080/ws-portfolio");
-    const stompClient = Stomp.over(socket);
+    function setTokenAndConnect() {
+        const token = document.getElementById("token").value;
+        if (!token) {
+            alert("Access Token을 입력하세요.");
+            return;
+        }
 
-    stompClient.connect({}, function (frame) {
-        output.innerText += "\n✅ 연결됨: " + frame;
+        // JWT를 쿠키에 저장 (쿠키 방식 인증을 서버가 사용한다는 전제)
+        document.cookie = "access=" + token + "; path=/";
 
-        stompClient.subscribe("/user/queue/portfolio", function (message) {
-            output.innerText += "\n📩 수신된 메시지:\n" + message.body;
+        connect();
+    }
+
+    function connect() {
+        socket = new SockJS("http://localhost:8080/ws-portfolio");
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            document.getElementById("output").innerText += "\n✅ 연결됨: " + frame;
+
+            stompClient.subscribe("/user/queue/portfolio", function (message) {
+                document.getElementById("output").innerText += "\n📩 메시지 수신:\n" + message.body;
+            });
+        }, function (error) {
+            document.getElementById("output").innerText += "\n❌ 연결 실패: " + error;
         });
+    }
 
-    }, function (error) {
-        output.innerText += "\n❌ 연결 실패: " + error;
-    });
+    function disconnect() {
+        if (stompClient && stompClient.connected) {
+            stompClient.disconnect(() => {
+                document.getElementById("output").innerText += "\n🛑 연결 해제됨";
+            });
+            stompClient = null;
+            socket = null;
+        } else {
+            document.getElementById("output").innerText += "\n⚠️ 연결된 WebSocket이 없습니다.";
+        }
+    }
 </script>
 </body>
 </html>

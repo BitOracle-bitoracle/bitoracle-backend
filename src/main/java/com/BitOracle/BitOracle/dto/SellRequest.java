@@ -10,4 +10,5 @@ import java.math.BigDecimal;
 public class SellRequest {
     private String coinName;
     private BigDecimal quantity;
+    private Double price;
 }

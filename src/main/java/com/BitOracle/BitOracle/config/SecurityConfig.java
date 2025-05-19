@@ -105,6 +105,7 @@ public class SecurityConfig {
                                 "/sub/**",       // stomp 구독 경로
                                 "/api/reply/**",
                                 "/ws-portfolio/**",
+                                "/api/portfolio/create",
                                 "/queue/**",
                                 "/socket.html",
                                 "/prediction",
