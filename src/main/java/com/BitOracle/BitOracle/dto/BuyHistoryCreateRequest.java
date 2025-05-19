@@ -11,5 +11,5 @@ import java.math.BigDecimal;
 public class BuyHistoryCreateRequest {
     private String coinName;
     private BigDecimal quantity;
-    //private double price;
+    private Double price; // 수동입력 (null이면 현재가로 대체)
 }

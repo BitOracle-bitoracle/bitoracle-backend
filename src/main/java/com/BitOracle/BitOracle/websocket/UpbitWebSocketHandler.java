@@ -31,7 +31,7 @@ public class UpbitWebSocketHandler extends BinaryWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         String subscribeMessage = "[{\"ticket\":\"multi_coin_chart\"}, " +
                 "{\"type\":\"ticker\", \"codes\":[" +
-                "\"KRW-BTC\", \"KRW-ETH\", \"KRW-XRP\", \"KRW-USDT\", \"KRW-SOL\"" +
+                "\"KRW-BTC\", \"KRW-ETH\"" +
                 "]}]";
         session.sendMessage(new TextMessage(subscribeMessage));
     }
