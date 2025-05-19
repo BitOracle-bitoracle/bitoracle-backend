@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class NewsResponseDto {
 
     @Builder
@@ -35,6 +37,8 @@ public class NewsResponseDto {
         private String newsContent;
         @JsonProperty("news_url")
         private String newsUrl;
+        @JsonProperty("created_at")
+        private LocalDateTime createdAt;
     }
 
     @Builder
