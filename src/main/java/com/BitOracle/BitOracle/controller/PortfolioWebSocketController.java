@@ -39,7 +39,7 @@ public class PortfolioWebSocketController {
     //3초마다 포트폴리오 푸시
     @Scheduled(fixedRate = 5000)
     public void startPortfolioUpdates() {
-        log.info("username @@@@@@@@@@@@@@@@@@@@@@@@@소켓유저 {}", simpUserRegistry.getUsers());
+        //log.info("username @@@@@@@@@@@@@@@@@@@@@@@@@소켓유저 {}", simpUserRegistry.getUsers());
         simpUserRegistry.getUsers().forEach(user -> {
             String username = user.getName();
             log.info("username @@@@@@@@@@@@@@@@@@@@@@@@@유저네임유저네임 {}", username);
