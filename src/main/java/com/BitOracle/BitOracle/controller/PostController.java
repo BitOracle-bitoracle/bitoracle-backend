@@ -115,4 +115,36 @@ public class PostController {
         return DataResponseDto.of(new LikeRes(islike,likeCount));
     }
 
+    //삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable Long postId,
+                                        @CookieValue String authorization) {
+        String token=authorization.replace("Bearer ","");
+        String name = jwtUtil.getUsername(token);
+        UserEntity userEntity = userEntityRepository.findByName(name);
+        User userEnt = userEntity.getUser();
+        Long userId = userEnt.getUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        postService.deletePost(postId, user);
+        return ResponseEntity.ok().body("게시글이 삭제되었습니다.");
+    }
+//수정
+    @PostMapping("/{postId}")
+    public  DataResponseDto<PostSaveResDto> updatePost(
+            @PathVariable Long postId,
+            @RequestPart(value = "post") @Parameter(schema =@Schema(type = "string", format = "binary")) PostSaveReqDto postSaveReqDto,
+                @RequestPart(value = "images",required = false) List<MultipartFile> images,
+                @CookieValue("access") String authorization
+                    ) {
+        String token=authorization.replace("Bearer ","");
+        String name = jwtUtil.getUsername(token);
+        UserEntity userEntity = userEntityRepository.findByName(name);
+        User userEnt = userEntity.getUser();
+        Long userId = userEnt.getUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        PostSaveResDto res = postService.updatePost(postId, postSaveReqDto, images, user);
+        return DataResponseDto.of(res,"게시글 수정되었습니다.");
+    }
 }

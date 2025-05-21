@@ -1,4 +1,5 @@
 /*
+
 package com.BitOracle.BitOracle.dummy;
 
 import com.BitOracle.BitOracle.domain.Post;
@@ -84,4 +85,5 @@ public class InitService {
 
 
 }
+
 */

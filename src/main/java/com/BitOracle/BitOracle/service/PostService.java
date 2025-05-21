@@ -1,15 +1,9 @@
 package com.BitOracle.BitOracle.service;
 
-import com.BitOracle.BitOracle.domain.Likes;
-import com.BitOracle.BitOracle.domain.Post;
-import com.BitOracle.BitOracle.domain.PostImage;
-import com.BitOracle.BitOracle.domain.User;
+import com.BitOracle.BitOracle.domain.*;
 import com.BitOracle.BitOracle.dto.*;
 import com.BitOracle.BitOracle.dummy.PostSearchCondition;
-import com.BitOracle.BitOracle.repository.LikeRepository;
-import com.BitOracle.BitOracle.repository.PostImageRepository;
-import com.BitOracle.BitOracle.repository.PostRepository;
-import com.BitOracle.BitOracle.repository.UserRepository;
+import com.BitOracle.BitOracle.repository.*;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -44,6 +38,7 @@ public class PostService {
     private String bucket; //버킷이름
     private final AmazonS3 amazonS3;
 
+    private final ReplyRepository replyRepository;
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -73,6 +68,54 @@ public class PostService {
         Post saved = postRepository.save(post);
         return PostSaveResDto.builder()
                 .id(saved.getPostId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .authorName(user.getNickname())
+                .build();
+    }
+    @Transactional
+    public PostSaveResDto updatePost(Long postId, PostSaveReqDto dto, List<MultipartFile> uploadFiles, User user) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+
+        // 작성자 검증
+        if (!post.getUser().getUserId().equals(user.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "게시글 작성자만 수정할 수 있습니다.");
+        }
+
+        // 게시글 내용 수정
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+
+        // 기존 이미지 삭제
+        List<PostImage> oldImages = post.getPostImageList();
+        if (oldImages != null && !oldImages.isEmpty()) {
+            for (PostImage img : oldImages) {
+                String fileName = extractFileNameFromUrl(img.getImgUrl());
+                deleteFile(fileName);
+            }
+            postImageRepository.deleteAll(oldImages);
+        }
+
+        //if 파일 있으면
+        if(uploadFiles != null && !uploadFiles.isEmpty()) {
+            List<String> fileNames = upload(uploadFiles); //파일 이름 list 리턴
+            List<PostImage> postImageList = new ArrayList<>();
+            for (String fileName : fileNames) {
+                String imageUrl = amazonS3.getUrl(bucket, fileName).toString(); //s3에 저장된 파일 url
+
+                PostImage postImage = PostImage.builder()
+                        .imgUrl(imageUrl)
+                        .post(post)
+                        .build();
+                postImageList.add(postImage);
+            }
+            log.info("postImageList@@@@ :" + postImageList);
+            post.setPostImageList(postImageList);
+        }
+
+        return PostSaveResDto.builder()
+                .id(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .authorName(user.getNickname())
@@ -177,4 +220,41 @@ public class PostService {
         Post post = postRepository.findByPostId(postId);
         return likeRepository.countByPost(post);
     }
+
+    //게시글 삭제
+    @Transactional
+    public void deletePost(Long postId, User user) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
+
+        // 작성자 확인
+        if (!post.getUser().getUserId().equals(user.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "게시글을 삭제할 권한이 없습니다.");
+        }
+
+        // 1. 댓글 삭제
+        List<Reply> replies = replyRepository.findByPost(post);
+        replyRepository.deleteAll(replies);
+
+        // 2. 좋아요 삭제
+        likeRepository.deleteAllByPost(post);
+
+        // 3. S3 이미지 삭제
+        List<PostImage> postImages = post.getPostImageList();
+        for (PostImage image : postImages) {
+            String fileName = extractFileNameFromUrl(image.getImgUrl());
+            deleteFile(fileName); // S3에서 삭제
+        }
+
+        // 4. PostImage DB 삭제
+        postImageRepository.deleteAll(postImages);
+
+        // 5. 게시글 삭제
+        postRepository.delete(post);
+    }
+    private String extractFileNameFromUrl(String imageUrl) {
+        // 예: https://bucket-name.s3.region.amazonaws.com/uuid.jpg -> uuid.jpg
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    }
+
 }
