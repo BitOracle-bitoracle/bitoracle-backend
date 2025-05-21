@@ -60,7 +60,7 @@ public class PortfolioService {
             double totalBuyAmount = histories.stream()
                     .mapToDouble(h -> h.getPrice() * h.getQuantity().doubleValue())
                     .sum();
-
+           // log.info("totalBuyAmouyn@@@@"+totalBuyAmount);
             //평균 매수 가격 매수금액 / 매수양
             double averageBuyPrice = totalQuantity.compareTo(BigDecimal.ZERO) == 0 ?
                     0.0 : totalBuyAmount / totalQuantity.doubleValue();
@@ -81,7 +81,7 @@ public class PortfolioService {
                             .currentPrice(currentPrice)
                             .evaluatuonAmount(evaluationAmount)
                             .profitRate(profitRate)
-                            .totalBuyAmount(totalQuantity)
+                            .totalBuyAmount(totalBuyAmount)
                             .build()
             );
         }

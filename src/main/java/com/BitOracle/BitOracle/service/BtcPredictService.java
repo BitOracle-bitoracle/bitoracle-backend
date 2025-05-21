@@ -78,7 +78,7 @@ public class BtcPredictService {
                         return predictedHistoryRepository.save(newPredicted);
                     });
                     // 2. PriceHistory 처리 (actual 값)
-/*                    priceHistoryRepository.findByDate(date).orElseGet(() -> {
+                    priceHistoryRepository.findByDate(date).orElseGet(() -> {
                         if (dto.getActual() != 0) {
                             PriceHistory newPrice = PriceHistory.builder()
                                     .date(date)
@@ -88,7 +88,7 @@ public class BtcPredictService {
                             return priceHistoryRepository.save(newPrice);
                         }
                         return null;
-                    });*/
+                    });
                 }
                 return predictions;
             }

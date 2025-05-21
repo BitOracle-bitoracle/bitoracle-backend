@@ -1,6 +1,7 @@
 package com.BitOracle.BitOracle.service;
 
 import com.BitOracle.BitOracle.domain.*;
+import com.BitOracle.BitOracle.domain.enums.PostType;
 import com.BitOracle.BitOracle.dto.*;
 import com.BitOracle.BitOracle.dummy.PostSearchCondition;
 import com.BitOracle.BitOracle.repository.*;
@@ -52,7 +53,8 @@ public class PostService {
         if(uploadFiles != null && !uploadFiles.isEmpty()) {
             List<String> fileNames = upload(uploadFiles); //파일 이름 list 리턴
             List<PostImage> postImageList = new ArrayList<>();
-            for (String fileName : fileNames) {
+            for (int i = 0; i < fileNames.size(); i++) {
+                String fileName = fileNames.get(i);
                 String imageUrl = amazonS3.getUrl(bucket, fileName).toString(); //s3에 저장된 파일 url
 
                 PostImage postImage = PostImage.builder()
@@ -60,6 +62,12 @@ public class PostService {
                         .post(post)
                         .build();
                 postImageList.add(postImage);
+
+
+                // 썸네일 지정: postType이 COLUMN이고 첫 번째 이미지일 경우
+                if (i == 0 && post.getPostType() == PostType.COLUMN) {
+                    post.setThumbnailUrl(imageUrl);
+                }
             }
             log.info("postImageList@@@@ :" + postImageList);
             post.setPostImageList(postImageList);
@@ -174,6 +182,29 @@ public class PostService {
                         .createdAt(post.getCreatedAt())
                         .build());
     }
+    //인기글조회
+    public Page<PostResDto> findByPostType(PostType postType, Pageable pageable) {
+        return postRepository.findByPostType(postType, pageable)
+                .map(post -> PostResDto.builder()
+                        .id(post.getPostId())
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .writer(post.getUser().getNickname()) // 작성자 이름
+                        .createdAt(post.getCreatedAt())
+                        .build());
+    }
+
+    public Page<ColumnResDto> findAllColumns(Pageable pageable) {
+        return postRepository.findAllByPostTypeOrderByCreatedAtDesc(PostType.COLUMN, pageable)
+                .map(post -> ColumnResDto.builder()
+                        .id(post.getPostId())
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .writer(post.getUser().getNickname())
+                        .createdAt(post.getCreatedAt())
+                        .thumbnailUrl(post.getThumbnailUrl()) // 🔸 썸네일 포함
+                        .build());
+    }
 
     //post id로 post 단건 조회
     public PostInfoDto getPostInfo(Long postId){
@@ -204,6 +235,11 @@ public class PostService {
         if(existing.isPresent()){
             likeRepository.delete(existing.get());
             post.setLikeCount(post.getLikeCount() - 1);
+
+            // 좋아요 수가 10개 이하가 되면 일반글로 전환
+            if (post.getLikeCount() < 10 && post.getPostType() == PostType.POPULAR) {
+                post.setPostType(PostType.NORMAL);
+            }
             return false;
         }else{
             Likes like = Likes.builder()
@@ -212,6 +248,10 @@ public class PostService {
                     .build();
             likeRepository.save(like);
             post.setLikeCount(post.getLikeCount() + 1);
+            // 좋아요가 10개 이상이면 인기글로 전환
+            if (post.getLikeCount() >= 10 && post.getPostType() == PostType.NORMAL) {
+                post.setPostType(PostType.POPULAR);
+            }
             return true;//좋추
         }
     }
