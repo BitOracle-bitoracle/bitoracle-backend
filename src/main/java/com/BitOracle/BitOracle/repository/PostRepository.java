@@ -1,6 +1,7 @@
 package com.BitOracle.BitOracle.repository;
 
 import com.BitOracle.BitOracle.domain.Post;
+import com.BitOracle.BitOracle.domain.enums.PostType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -15,4 +16,7 @@ public interface PostRepository extends JpaRepository<Post,Long>, CustomPostRepo
 
     @EntityGraph(attributePaths = {"user"})
     Optional<Post> findWithWriterByPostId(Long postId);
+
+    Page<Post> findByPostType(PostType postType, Pageable pageable);
+    Page<Post> findAllByPostTypeOrderByCreatedAtDesc(PostType postType, Pageable pageable);
 }

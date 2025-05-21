@@ -12,7 +12,7 @@ public class PortfolioResDto {
     private String coinName;
     private BigDecimal quantity;
     private  double averageBuyPrice;
-    private BigDecimal totalBuyAmount;
+    private double totalBuyAmount;
     private double currentPrice;
     private double evaluatuonAmount;
     private double profitRate;

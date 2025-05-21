@@ -1,9 +1,11 @@
 package com.BitOracle.BitOracle.controller;
 
 import com.BitOracle.BitOracle.converter.PredictionConverter;
+import com.BitOracle.BitOracle.domain.Post;
 import com.BitOracle.BitOracle.domain.Prediction;
 import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
+import com.BitOracle.BitOracle.domain.enums.PostType;
 import com.BitOracle.BitOracle.domain.enums.UserType;
 import com.BitOracle.BitOracle.dto.*;
 import com.BitOracle.BitOracle.dummy.PostSearchCondition;
@@ -86,6 +88,28 @@ public class PostController {
         Page<PostResDto> posts = postService.findAll(pageable);
         return DataResponseDto.of(posts,"전체 글 조회@@");
     }
+    //인기글 전체 조회
+    @GetMapping("/popular")
+    public DataResponseDto<Page<PostResDto>> getPopularPosts(@RequestParam(defaultValue = "0", name = "page") int page,
+                                                             @RequestParam(defaultValue = "10", name = "size") int size,
+                                                             @RequestParam(defaultValue = "createdAt", name = "sortBy") String sortBy,
+                                                             @RequestParam(defaultValue = "desc", name = "direction") String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<PostResDto> posts = postService.findByPostType(PostType.POPULAR, pageable);
+        return DataResponseDto.of(posts, "인기 글 조회");
+    }
+    //칼럼 전체조회
+    @GetMapping("/column")
+    public DataResponseDto<Page<ColumnResDto>> getAllColumns(@RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "10") int size,
+                                                           @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                           @RequestParam(defaultValue = "desc") String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<ColumnResDto> posts = postService.findAllColumns(pageable);
+        return DataResponseDto.of(posts, "칼럼글 조회 성공");
+    }
     //단건조회
     @GetMapping("/post/{postId}")
     public DataResponseDto<PostInfoDto> getPostInfo(@PathVariable("postId")Long postId) {
@@ -110,6 +134,8 @@ public class PostController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
         log.info("현재 사용자 : " + user.getNickname());
+
+
         boolean islike = postService.likePost(user, postId);
         long likeCount = postService.getLikeCount(postId);
         return DataResponseDto.of(new LikeRes(islike,likeCount));
@@ -118,7 +144,7 @@ public class PostController {
     //삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable Long postId,
-                                        @CookieValue String authorization) {
+                                        @CookieValue("access") String authorization) {
         String token=authorization.replace("Bearer ","");
         String name = jwtUtil.getUsername(token);
         UserEntity userEntity = userEntityRepository.findByName(name);
@@ -147,4 +173,7 @@ public class PostController {
         PostSaveResDto res = postService.updatePost(postId, postSaveReqDto, images, user);
         return DataResponseDto.of(res,"게시글 수정되었습니다.");
     }
+
+
+
 }

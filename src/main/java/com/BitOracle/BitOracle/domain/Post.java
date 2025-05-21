@@ -29,6 +29,9 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PostType postType;
 
+    @Column(nullable = true)
+    private String thumbnailUrl; // 썸네일 이미지 URL
+
     @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Reply> replyList = new ArrayList<>();
@@ -40,6 +43,8 @@ public class Post extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+
 
     public void addReply(Reply comment){
         //comment의 Post 설정은 comment에서 함

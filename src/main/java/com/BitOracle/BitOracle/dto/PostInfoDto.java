@@ -27,6 +27,7 @@ public class PostInfoDto {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.likeCount = post.getLikeCount();
+        this.createdAt = post.getCreatedAt();
         this.postImageList = post.getPostImageList().stream()
                 .map(PostImage :: getImgUrl)
                 .collect(Collectors.toList());
