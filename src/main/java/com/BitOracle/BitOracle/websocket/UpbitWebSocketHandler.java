@@ -59,6 +59,8 @@ public class UpbitWebSocketHandler extends BinaryWebSocketHandler {
         double price = json.get("trade_price").asDouble();     // 현재가
         String date = json.get("trade_date").asText();
         String time = json.get("trade_timestamp").asText();
+        double volume = json.get("acc_trade_price_24h").asDouble(); // 24시간 거래량
+        double changeRate = json.get("signed_change_rate").asDouble(); // 24시간 변동률
 
         //실시간 시세 저장
         String coinName = code;//KRW-BTC
@@ -69,6 +71,8 @@ public class UpbitWebSocketHandler extends BinaryWebSocketHandler {
         data.put("price", price);
         data.put("date", date);
         data.put("time", time);
+        data.put("volume_24h", volume);                  // 24시간 거래량
+        data.put("change_rate_24h", changeRate);         // 24시간 변동률
         //log.info("📡 받은 바이너리 데이터: " + data);
         messagingTemplate.convertAndSend("/sub/trade", data);
     }
