@@ -1,8 +1,11 @@
 package com.BitOracle.BitOracle.service;
 
 import com.BitOracle.BitOracle.dto.CoinMarketCapResponse;
+import com.BitOracle.BitOracle.dto.FearGreedDto;
 import com.BitOracle.BitOracle.dto.MetricsDto;
 import com.BitOracle.BitOracle.dto.UpbitTickerResponse;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -106,11 +109,11 @@ public class MetricsService {
                     .divide(globalPriceKrw, 4, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
 
-            log.info("🟢 업비트 BTC(KRW): {}", upbitPrice);
-            log.info("🌐 글로벌 BTC(USD): {}", globalPrice);
-            log.info("💱 환율(USD→KRW): {}", exchangeRate);
-            log.info("🌐 글로벌 BTC(KRW): {}", globalPriceKrw);
-            log.info("📊 김치 프리미엄: {}%", kimchiPremium);
+//            log.info("🟢 업비트 BTC(KRW): {}", upbitPrice);
+//            log.info("🌐 글로벌 BTC(USD): {}", globalPrice);
+//            log.info("💱 환율(USD→KRW): {}", exchangeRate);
+//            log.info("🌐 글로벌 BTC(KRW): {}", globalPriceKrw);
+//            log.info("📊 김치 프리미엄: {}%", kimchiPremium);
 
             return kimchiPremium;
 
@@ -120,30 +123,25 @@ public class MetricsService {
         }
     }
 
-    public BigDecimal calculateUsdKrwRate() {
+    public FearGreedDto fetchFearGreedIndex() {
         RestTemplate restTemplate = new RestTemplate();
         try {
-            // 1. 업비트 BTC/KRW 가격
-            String krwUrl = "https://api.upbit.com/v1/ticker?markets=KRW-BTC";
-            ResponseEntity<UpbitTickerResponse[]> krwResp =
-                    restTemplate.getForEntity(krwUrl, UpbitTickerResponse[].class);
-            BigDecimal krwPrice = new BigDecimal(krwResp.getBody()[0].getTrade_price());
+            String url = "https://api.alternative.me/fng/";
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-            // 2. 업비트 BTC/USDT 가격
-            String usdtUrl = "https://api.upbit.com/v1/ticker?markets=USDT-BTC";
-            ResponseEntity<UpbitTickerResponse[]> usdtResp =
-                    restTemplate.getForEntity(usdtUrl, UpbitTickerResponse[].class);
-            BigDecimal usdtPrice = new BigDecimal(usdtResp.getBody()[0].getTrade_price());
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(response.getBody());
+            JsonNode dataNode = root.get("data").get(0); // 최신 데이터 1개
 
-            // 3. 환율 계산: KRW-BTC ÷ USDT-BTC
-            BigDecimal exchangeRate = krwPrice.divide(usdtPrice, 2, RoundingMode.HALF_UP);
-
-            log.info("🔁 간접 환율 계산: KRW-BTC = {}, USDT-BTC = {}, 환율 = {}", krwPrice, usdtPrice, exchangeRate);
-            return exchangeRate;
+            return FearGreedDto.builder()
+                    .value(dataNode.get("value").asText())
+                    .value_classification(dataNode.get("value_classification").asText())
+                    .timestamp(dataNode.get("timestamp").asText())
+                    .build();
 
         } catch (Exception e) {
-            log.error("환율 간접 계산 실패", e);
-            return BigDecimal.valueOf(1400); // fallback
+            log.error("공포·탐욕 지수 조회 실패", e);
+            return null;
         }
     }
 }
