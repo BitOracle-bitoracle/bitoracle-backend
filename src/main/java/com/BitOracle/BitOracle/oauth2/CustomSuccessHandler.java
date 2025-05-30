@@ -29,6 +29,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public CustomSuccessHandler(JWTUtil jwtUtil, RefreshRepository refreshRepository){
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
+
+        this.setDefaultTargetUrl("https://bitoracle.netlify.app");
+        this.setAlwaysUseDefaultTargetUrl(true);
     }
 
     // 로그인 성공 시 동작하는 메소드
