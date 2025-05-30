@@ -54,7 +54,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setHeader("access", access);
         addCookieWithSameSite(response, "refresh", refresh, 86400000L);
         response.setStatus(HttpStatus.OK.value());
-        response.sendRedirect("http://localhost:8080/swagger-ui/index.html");
+        response.sendRedirect("https://bitoracle.netlify.app");
 
 
         //OAuth2User
