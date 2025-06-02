@@ -16,4 +16,7 @@ public class ColumnResDto {
     private String writer;
     private LocalDateTime createdAt;
     private String thumbnailUrl; // 🔸 칼럼글용 썸네일 필드
+
+    private int likeCount;
+    private int replyCount; // ✅ 댓글 수 필드 추가
 }

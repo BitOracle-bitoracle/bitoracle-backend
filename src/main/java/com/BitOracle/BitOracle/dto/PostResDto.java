@@ -16,5 +16,7 @@ public class PostResDto {
     private String writer;
     private LocalDateTime createdAt;
 
+    private int likeCount;
+    private int replyCount; // ✅ 댓글 수 필드 추가
 
 }

@@ -47,6 +47,19 @@ public class PostController {
     private final LikeRepository likeRepository;
     private final UserEntityRepository userEntityRepository;;
 
+    @GetMapping("/my-posts")
+    public List<PostResDto> getMyPosts(@CookieValue("access") String authorization) {
+        String token=authorization.replace("Bearer ","");
+        String name = jwtUtil.getUsername(token);
+        UserEntity userEntity = userEntityRepository.findByName(name);
+        User userEnt = userEntity.getUser();
+        Long userId = userEnt.getUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        log.info("사용자 정보 :" +  user.getNickname());
+        return postService.findAllByUser(user);
+    }
+
     @PostMapping(value = "/user")
     public void selectUpDown(@CookieValue("access") String authorization){
         String token=authorization.replace("Bearer ","");
