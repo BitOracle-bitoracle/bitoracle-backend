@@ -24,10 +24,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,12 +44,50 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostImageRepository postImageRepository;
 
+    //이미지 먼저 업로드
+    public String saveImage(MultipartFile image){
+        String fileName = upload(Collections.singletonList(image)).get(0);
+        String imageUrl = amazonS3.getUrl(bucket, fileName).toString();
+        return imageUrl;
+    }
+    //content에서 이미지 파싱
+    private List<String> extractImageUrls(String content) {
+        List<String> urls = new ArrayList<>();
+        Pattern pattern = Pattern.compile("!\\[[^\\]]*\\]\\(([^)]+)\\)");
+        Matcher matcher = pattern.matcher(content);
+
+        while (matcher.find()) {
+            urls.add(matcher.group(1)); // 괄호 안의 URL 추출
+        }
+
+        return urls;
+    }
+
     //일반 게시글 추가
     public PostSaveResDto save(PostSaveReqDto postSaveDto, List<MultipartFile> uploadFiles, User user) {
         //dto->entity
         Post post = postSaveDto.toEntity(user);
+        List<String> imageUrls = extractImageUrls(postSaveDto.getContent());
+        if (!imageUrls.isEmpty()) {
+            List<PostImage> postImageList = new ArrayList<>();
+            for (int i = 0; i < imageUrls.size(); i++) {
+                String imageUrl = imageUrls.get(i);
+                PostImage postImage = PostImage.builder()
+                        .imgUrl(imageUrl)
+                        .post(post)
+                        .build();
+                postImageList.add(postImage);
+
+                // 썸네일 설정 (COLUMN 타입이며 첫 번째 이미지일 때)
+                if (i == 0 && post.getPostType() == PostType.COLUMN) {
+                    post.setThumbnailUrl(imageUrl);
+                }
+            }
+            log.info("postImageList@@@@ :" + postImageList);
+            post.setPostImageList(postImageList);
+        }
         //if 파일 있으면
-        if(uploadFiles != null && !uploadFiles.isEmpty()) {
+/*        if(uploadFiles != null && !uploadFiles.isEmpty()) {
             List<String> fileNames = upload(uploadFiles); //파일 이름 list 리턴
             List<PostImage> postImageList = new ArrayList<>();
             for (int i = 0; i < fileNames.size(); i++) {
@@ -71,7 +108,8 @@ public class PostService {
             }
             log.info("postImageList@@@@ :" + postImageList);
             post.setPostImageList(postImageList);
-        }
+        }*/
+
 
         Post saved = postRepository.save(post);
         return PostSaveResDto.builder()

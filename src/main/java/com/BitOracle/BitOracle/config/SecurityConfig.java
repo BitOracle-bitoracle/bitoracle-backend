@@ -112,7 +112,8 @@ public class SecurityConfig {
                                 "/predict-now",
                                 "/real-price",
                                 "api/price/chart",
-                                "/api/predict/chart"
+                                "/api/predict/chart",
+                                "/api/community/post/image/upload"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

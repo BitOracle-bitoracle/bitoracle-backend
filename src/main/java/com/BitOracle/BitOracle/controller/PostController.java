@@ -58,6 +58,11 @@ public class PostController {
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
         log.info("사용자 정보 :" +  user.getNickname());
     }
+    @PostMapping(value = "/post/image/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public DataResponseDto<String> uploadImage(@RequestPart("image") MultipartFile image) {
+        String imageUrl = postService.saveImage(image);
+        return DataResponseDto.of(imageUrl, "이미지 업로드 성공");
+    }
 
     @PostMapping(value = "/post",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DataResponseDto<PostSaveResDto> savePost(@RequestPart(value = "post") @Parameter(schema =@Schema(type = "string", format = "binary")) PostSaveReqDto postSaveReqDto,
