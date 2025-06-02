@@ -38,11 +38,16 @@ public class PostInfoDto {
         Map<Reply, List<Reply>> replyListMap = post.getReplyList().stream()
                 .filter(reply -> reply.getParent() != null)//대댓글만 선별
                 .collect(Collectors.groupingBy(Reply::getParent));
+        // 부모 댓글(댓글)만 따로 필터링
+        this.replyList = post.getReplyList().stream()
+                .filter(reply -> reply.getParent() == null) // 댓글만
+                .map(reply -> new ReplyInfoDto(reply, replyListMap.getOrDefault(reply, List.of())))
+                .toList();
 
         //댓글과 대댓글로 replyList생성
-        replyList = replyListMap.keySet().stream()//댓글가지고오기
+/*        replyList = replyListMap.keySet().stream()//댓글가지고오기
                 .map(reply -> new ReplyInfoDto(reply,replyListMap.get(reply)))
-                .toList();
+                .toList();*/
 
     }
 }

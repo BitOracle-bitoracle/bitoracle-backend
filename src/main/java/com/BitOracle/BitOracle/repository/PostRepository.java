@@ -1,6 +1,7 @@
 package com.BitOracle.BitOracle.repository;
 
 import com.BitOracle.BitOracle.domain.Post;
+import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.enums.PostType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,6 @@ public interface PostRepository extends JpaRepository<Post,Long>, CustomPostRepo
 
     Page<Post> findByPostType(PostType postType, Pageable pageable);
     Page<Post> findAllByPostTypeOrderByCreatedAtDesc(PostType postType, Pageable pageable);
+
+    List<Post> findByUserOrderByCreatedAtDesc(User user);
 }

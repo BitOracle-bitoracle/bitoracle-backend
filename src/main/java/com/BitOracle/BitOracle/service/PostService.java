@@ -119,6 +119,7 @@ public class PostService {
                 .authorName(user.getNickname())
                 .build();
     }
+    //수정
     @Transactional
     public PostSaveResDto updatePost(Long postId, PostSaveReqDto dto, List<MultipartFile> uploadFiles, User user) {
         Post post = postRepository.findById(postId)
@@ -143,20 +144,23 @@ public class PostService {
             postImageRepository.deleteAll(oldImages);
         }
 
-        //if 파일 있으면
-        if(uploadFiles != null && !uploadFiles.isEmpty()) {
-            List<String> fileNames = upload(uploadFiles); //파일 이름 list 리턴
+        // 새 content에서 이미지 URL 추출
+        List<String> imageUrls = extractImageUrls(dto.getContent());
+        if (!imageUrls.isEmpty()) {
             List<PostImage> postImageList = new ArrayList<>();
-            for (String fileName : fileNames) {
-                String imageUrl = amazonS3.getUrl(bucket, fileName).toString(); //s3에 저장된 파일 url
-
+            for (int i = 0; i < imageUrls.size(); i++) {
+                String imageUrl = imageUrls.get(i);
                 PostImage postImage = PostImage.builder()
                         .imgUrl(imageUrl)
                         .post(post)
                         .build();
                 postImageList.add(postImage);
+
+                // 썸네일 지정: COLUMN 유형이고 첫 번째 이미지인 경우
+                if (i == 0 && post.getPostType() == PostType.COLUMN) {
+                    post.setThumbnailUrl(imageUrl);
+                }
             }
-            log.info("postImageList@@@@ :" + postImageList);
             post.setPostImageList(postImageList);
         }
 
@@ -167,6 +171,7 @@ public class PostService {
                 .authorName(user.getNickname())
                 .build();
     }
+
 
     public List<String> upload(List<MultipartFile> multipartFiles){
         List<String> fileNameList = new ArrayList<>();
@@ -218,6 +223,8 @@ public class PostService {
                         .content(post.getContent())
                         .writer(post.getUser().getNickname()) // 작성자 이름
                         .createdAt(post.getCreatedAt())
+                        .likeCount(post.getLikeCount()) // ✅ 좋아요 수
+                        .replyCount(post.getReplyList().size()) // ✅ 댓글 수
                         .build());
     }
     //인기글조회
@@ -229,6 +236,8 @@ public class PostService {
                         .content(post.getContent())
                         .writer(post.getUser().getNickname()) // 작성자 이름
                         .createdAt(post.getCreatedAt())
+                        .likeCount(post.getLikeCount()) // ✅ 좋아요 수
+                        .replyCount(post.getReplyList().size()) // ✅ 댓글 수
                         .build());
     }
 
@@ -240,6 +249,8 @@ public class PostService {
                         .content(post.getContent())
                         .writer(post.getUser().getNickname())
                         .createdAt(post.getCreatedAt())
+                        .likeCount(post.getLikeCount()) // ✅ 좋아요 수
+                        .replyCount(post.getReplyList().size()) // ✅ 댓글 수
                         .thumbnailUrl(post.getThumbnailUrl()) // 🔸 썸네일 포함
                         .build());
     }
@@ -335,4 +346,19 @@ public class PostService {
         return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
     }
 
+
+    public List<PostResDto> findAllByUser(User user) {
+        List<Post> posts = postRepository.findByUserOrderByCreatedAtDesc(user);
+        return posts.stream()
+                .map(post -> PostResDto.builder()
+                        .id(post.getPostId())
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .writer(user.getNickname())
+                        .createdAt(post.getCreatedAt())
+                        .likeCount(post.getLikeCount())
+                        .replyCount(post.getReplyList().size())
+                        .build())
+                .toList();
+    }
 }
