@@ -24,7 +24,7 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
-        log.info("==== WebSocketAuthInterceptor 실행됨 ====");
+//        log.info("==== WebSocketAuthInterceptor 실행됨 ====");
 
         // HttpServletRequest로 변환
         if (request instanceof ServletServerHttpRequest servletRequest) {

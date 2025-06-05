@@ -23,19 +23,6 @@ import java.util.List;
 @RequestMapping("/api/portfolio")
 public class PortfolioController {
     private final PortfolioService portfolioService;
-    private final JWTUtil jwtUtil;
-    private final UserRepository userRepository;
-    private final UserEntityRepository userEntityRepository;
-
-    @PostMapping("/create")
-    public ResponseEntity<String> createPortfolio(
-            @RequestHeader("Authorization") String authorization
-    ) {
-        Long userId = portfolioService.getUserId(authorization);
-        portfolioService.createPortfolio(userId);
-        return ResponseEntity.ok("포트폴리오가 성공적으로 생성되었습니다.");
-    }
-
 
     @PostMapping("/buy")
     public ResponseEntity<String> buyCoin(
