@@ -55,12 +55,8 @@ public class NewsService {
         }
 
         String kw = openAiService.getKeyword(todayNewsList);
-        BtcPrice newBtcPrice = BtcPrice.builder()
-                .coinDate(btcPrice.getCoinDate())
-                .price(btcPrice.getPrice())
-                .keyword(kw)
-                .build();
-        btcPriceRepository.save(newBtcPrice);
+        btcPrice.setKeyword(kw);
+        btcPriceRepository.save(btcPrice);
         return kw;
     }
 }

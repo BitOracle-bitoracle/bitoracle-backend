@@ -38,7 +38,7 @@ public class JWTFilter extends OncePerRequestFilter { // 한 번만 요청이 �
                 }
             }
         }
-        System.out.println("access token : " + accessToken);
+        // System.out.println("access token : " + accessToken);
 
         // 토큰이 없다면 다음 필터로 넘김
         if (accessToken == null) {

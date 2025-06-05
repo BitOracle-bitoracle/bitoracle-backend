@@ -30,18 +30,6 @@ public class TestController {
         return "뉴스 파이프라인 실행 완료!";
     }
 
-    @GetMapping("/token")
-    public ResponseEntity<String> generateToken() {
-        // 테스트용 username, role 설정
-        String username = "testuser";
-        String role = "ROLE_USER";
-
-        // 1시간짜리 access token 생성
-        String accessToken = jwtUtil.createJwt("access", username, role, 3600000L);
-
-        return ResponseEntity.ok(accessToken);
-    }
-
     @GetMapping("/run-save-midnightPrice")
     public String runSaveMidnightPriceNow() throws InterruptedException {
         btcPriceService.saveMidnightBtcPrice();

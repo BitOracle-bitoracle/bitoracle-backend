@@ -89,7 +89,6 @@ public class BtcPriceService {
         }
     }
 
-    @Transactional
     public void updateIsCorrect() {
         LocalDate today = LocalDate.now();
         LocalDate yesterday = today.minusDays(1);
@@ -126,7 +125,6 @@ public class BtcPriceService {
         log.info("모든 prediction isCorrect 업데이트 완료");
     }
 
-    @Transactional
     public void updateUserRecords() {
         // 모든 유저들의 Record를 업데이트
 
