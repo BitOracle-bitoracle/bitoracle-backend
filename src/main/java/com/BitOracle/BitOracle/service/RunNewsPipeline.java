@@ -21,7 +21,7 @@ public class RunNewsPipeline {
     private final OpenAiService openAiService;
     private final NewsRepository newsRepository;
 
-    @Scheduled(cron = "0 0 1 * * *") // 매일 01시 실행
+    @Scheduled(cron = "0 0 10 * * *") // 매일 01시 실행 (인스턴스 시차 때문에 이렇게)
     public void runNewsPipeline() {
         List<CrawledNewsDto> allNews = crawler.fetchNews();
 

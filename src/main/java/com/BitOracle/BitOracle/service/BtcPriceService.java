@@ -45,7 +45,7 @@ public class BtcPriceService {
         return btcPrice;
     }
 
-    @Scheduled(cron = "1 0 0 * * *", zone = "Asia/Seoul") // 00시 0분 1초에 스케줄링
+    @Scheduled(cron = "1 0 9 * * *", zone = "Asia/Seoul") // 00시 0분 1초에 스케줄링 (인스턴스 시차 때문에 이렇게)
     public void saveMidnightBtcPrice() {
         LocalDate today = LocalDate.now();
 
