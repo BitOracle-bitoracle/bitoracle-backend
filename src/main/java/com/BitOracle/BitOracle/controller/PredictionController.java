@@ -23,7 +23,7 @@ public class PredictionController {
 
     @PostMapping(value = "predict/select")
     public DataResponseDto<PredictionResponseDto.selectUpDownResponseDto> selectUpDown(
-            @CookieValue("access") String authorization,
+            @RequestHeader("Authorization") String authorization,
             @RequestBody PredictionRequestDto.PredictionUpDownRequestDto predictionUpDownRequestDto){
 
         Prediction prediction = predictionService.selectUpDown(authorization, predictionUpDownRequestDto);
@@ -34,7 +34,7 @@ public class PredictionController {
 
     @GetMapping(value = "predict/calender")
     public DataResponseDto<List<PredictionResponseDto.getCalenderResponseDto>> getCalender(
-            @CookieValue("access") String authorization){
+            @RequestHeader("Authorization") String authorization){
 
         List<Prediction> predictionList = predictionService.getCalender(authorization);
         List<PredictionResponseDto.getCalenderResponseDto> responseDto = PredictionConverter.toGetCalenderResponseDto(predictionList);
@@ -44,7 +44,7 @@ public class PredictionController {
 
     @GetMapping(value = "predict/stats")
     public DataResponseDto<PredictionResponseDto.getStatsResponseDto> getStats(
-            @CookieValue("access") String authorization){
+            @RequestHeader("Authorization") String authorization){
 
         Record record = predictionService.getStats(authorization);
         PredictionResponseDto.getStatsResponseDto responseDto = PredictionConverter.toGetStatsResponseDto(record);

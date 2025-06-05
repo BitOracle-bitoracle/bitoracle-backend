@@ -30,7 +30,7 @@ public class Replycontroller {
     //댓글추가
     @PostMapping("/{postId}")
     public DataResponseDto<ReplyResDto> replySave(@PathVariable(name = "postId") Long postId, ReplySaveReqDto replySaveReqDto,
-                                                  @CookieValue("access") String authorization){
+                                                  @RequestHeader("Authorization") String authorization){
         Reply reply = replyService.saveReply(postId, replySaveReqDto,authorization);
         ReplyResDto replyResDto = ReplyResDto.builder()
                 .replyId(reply.getReplyId())
@@ -49,7 +49,7 @@ public class Replycontroller {
     public DataResponseDto<ReplyResDto> saveReReply(@PathVariable Long postId,
                                          @PathVariable Long parentId,
                                           ReplySaveReqDto replySaveReqDto,
-                                         @CookieValue("access") String authorization) {
+                                                    @RequestHeader("Authorization") String authorization) {
             Reply reply = replyService.saveRe_Reply(postId, parentId, replySaveReqDto, authorization);
             ReplyResDto replyResDto = ReplyResDto.builder()
                     .replyId(reply.getReplyId())
@@ -65,7 +65,7 @@ public class Replycontroller {
     @DeleteMapping("/{replyId}")
     public DataResponseDto<?> deleteReply(
                                                     @PathVariable Long replyId
-                                                    ,@CookieValue("access") String authorization) {
+                                                    ,@RequestHeader("Authorization") String authorization) {
         replyService.remove(replyId,authorization);
         return DataResponseDto.of("댓글 삭제 완료");
     }

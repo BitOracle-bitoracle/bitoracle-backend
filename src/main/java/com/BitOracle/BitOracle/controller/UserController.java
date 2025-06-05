@@ -6,10 +6,7 @@ import com.BitOracle.BitOracle.dto.UserResponseDto;
 import com.BitOracle.BitOracle.response.DataResponseDto;
 import com.BitOracle.BitOracle.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -20,7 +17,7 @@ public class UserController {
 
     @GetMapping(value = "/mypage/userinfo")
     DataResponseDto<UserResponseDto.userinfoResponseDto> getUserinfo(
-            @CookieValue("access") String authorization){
+            @RequestHeader("Authorization") String authorization){
 
         User user = userService.getUser(authorization);
         UserResponseDto.userinfoResponseDto responseDto = UserConverter.toUserinfoResponseDto(user);

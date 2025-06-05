@@ -29,7 +29,7 @@ public class PortfolioController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createPortfolio(
-            @CookieValue("access") String authorization
+            @RequestHeader("Authorization") String authorization
     ) {
         Long userId = portfolioService.getUserId(authorization);
         portfolioService.createPortfolio(userId);
@@ -39,7 +39,7 @@ public class PortfolioController {
 
     @PostMapping("/buy")
     public ResponseEntity<String> buyCoin(
-           @CookieValue("access") String authorization,
+            @RequestHeader("Authorization") String authorization,
             @RequestBody BuyHistoryCreateRequest request
     ) {
         Long userId = portfolioService.getUserId(authorization);
@@ -49,7 +49,7 @@ public class PortfolioController {
 
     // 매도 요청
     @PostMapping("/sell")
-    public ResponseEntity<?> sellCoin(@CookieValue("access") String authorization,
+    public ResponseEntity<?> sellCoin(@RequestHeader("Authorization") String authorization,
                                       @RequestBody SellRequest request) {
         Long userId = portfolioService.getUserId(authorization);
         try {

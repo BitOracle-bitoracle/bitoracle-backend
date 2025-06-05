@@ -21,9 +21,6 @@ import java.util.Collections;
 @Service
 public class MetricsService {
 
-    private final String API_KEY = "c23fdae7-d913-4577-a125-33f2f0565dd5"; // 🔐 CoinMarketCap 프로 키
-    private final String URL = "https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest";
-
     public MetricsDto fetchMetrics() {
         MetricsDto marketMetrics = fetchMarketMetrics();
         BigDecimal kimchiPremium = calculateKimchiPremium();
@@ -36,31 +33,25 @@ public class MetricsService {
     }
 
     public MetricsDto fetchMarketMetrics() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-CMC_PRO_API_KEY", API_KEY);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(URL, HttpMethod.GET, entity, String.class);
-
         try {
-            // JSON 파싱 간단 처리 (정식으로 하려면 ObjectMapper 사용)
-            String body = response.getBody();
-            String totalMarketCapStr = body.split("\"total_market_cap\":")[1].split(",")[0];
-            String btcDominanceStr = body.split("\"btc_dominance\":")[1].split(",")[0];
+            String url = "https://api.coingecko.com/api/v3/global";
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-            BigDecimal marketCap = new BigDecimal(totalMarketCapStr);
-            BigDecimal dominance = new BigDecimal(btcDominanceStr);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(response.getBody());
+            JsonNode dataNode = root.get("data");
+
+            BigDecimal marketCap = new BigDecimal(dataNode.get("total_market_cap").get("usd").asText());
+            BigDecimal btcDominance = new BigDecimal(dataNode.get("market_cap_percentage").get("btc").asText());
 
             return MetricsDto.builder()
                     .marketCap(marketCap)
-                    .btcDominance(dominance)
+                    .btcDominance(btcDominance)
                     .build();
 
         } catch (Exception e) {
-            log.error("시가총액 파싱 실패", e);
+            log.error("📉 CoinGecko 시가총액/도미넌스 조회 실패", e);
             return null;
         }
     }
@@ -76,30 +67,15 @@ public class MetricsService {
 
             BigDecimal upbitPrice = new BigDecimal(upbitResp.getBody()[0].getTrade_price());
 
-            // 2. CMC BTC/USDT 가격
-            String cmcUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC&convert=USDT";
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-CMC_PRO_API_KEY", API_KEY);
-            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<CoinMarketCapResponse> cmcResp =
-                    restTemplate.exchange(cmcUrl, HttpMethod.GET, entity, CoinMarketCapResponse.class);
-
-            String priceStr = cmcResp.getBody()
-                    .getData()
-                    .get("BTC")
-                    .getQuote()
-                    .get("USDT")
-                    .getPrice();
-
-            BigDecimal globalPrice = new BigDecimal(priceStr);
+            // 2. CoinGecko BTC/USD 가격
+            String coingeckoUrl = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd";
+            ResponseEntity<JsonNode> cgResp =
+                    restTemplate.getForEntity(coingeckoUrl, JsonNode.class);
+            BigDecimal globalPrice = new BigDecimal(cgResp.getBody().get("bitcoin").get("usd").asText());
 
             // 3. 환율
-//            BigDecimal exchangeRate = calculateUsdKrwRate();
-            BigDecimal exchangeRate = BigDecimal.valueOf(1400); // 임시 하드 코딩
+            BigDecimal exchangeRate = getUsdToKrwRate();
+//            BigDecimal exchangeRate = BigDecimal.valueOf(1350); // 임시 하드 코딩
 
             // 4. 글로벌 BTC 가격 (KRW 환산)
             BigDecimal globalPriceKrw = globalPrice.multiply(exchangeRate);
@@ -142,6 +118,24 @@ public class MetricsService {
         } catch (Exception e) {
             log.error("공포·탐욕 지수 조회 실패", e);
             return null;
+        }
+    }
+
+    public BigDecimal getUsdToKrwRate() {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://api.exchangerate.fun/latest?base=USD";
+
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(response.getBody());
+            BigDecimal rate = new BigDecimal(root.get("rates").get("KRW").asText());
+
+            return rate.setScale(2, RoundingMode.HALF_UP);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return BigDecimal.ZERO;
         }
     }
 }

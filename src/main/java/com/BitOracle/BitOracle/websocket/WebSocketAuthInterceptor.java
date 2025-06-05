@@ -25,24 +25,28 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
         log.info("==== WebSocketAuthInterceptor 실행됨 ====");
+
+        // HttpServletRequest로 변환
         if (request instanceof ServletServerHttpRequest servletRequest) {
             HttpServletRequest httpRequest = servletRequest.getServletRequest();
-            Cookie[] cookies = httpRequest.getCookies();
-            if (cookies == null) return false;
 
-            for (Cookie cookie : cookies) {
-                if ("access".equals(cookie.getName())) {
-                    String token = cookie.getValue();
-                    log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ token"+token);
-                    if (!jwtUtil.isExpired(token)) { // 수정 필요
-                        String username = jwtUtil.getUsername(token);
-                        attributes.put("username", username); //username 저장
-                        return true;
-                    }
+            // Authorization 헤더에서 Bearer 토큰 추출
+            String authHeader = httpRequest.getParameter("token");
+            // log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ token: " + authHeader);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7); // "Bearer " 이후 토큰만 추출
+                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ token: " + token);
+
+                // 토큰 검증 및 사용자 이름 추출
+                if (!jwtUtil.isExpired(token)) {
+                    String username = jwtUtil.getUsername(token);
+                    attributes.put("username", username); // WebSocket 세션에 username 저장
+                    return true;
                 }
             }
         }
-        return false;
+
+        return false; // 토큰 없거나 유효하지 않으면 handshake 거부
     }
 
     @Override

@@ -17,13 +17,13 @@ public class MetricsPublisher {
     private final MetricsService metricsService;
     private final MetricsCache metricsCache;
 
-//    @Scheduled(fixedRate = 10000) // 10초마다 전송
-//    public void publishMetrics() {
-//        MetricsDto metrics = metricsService.fetchMetrics();
-//        if (metrics != null) {
-//            metricsCache.update(metrics);
-//            messagingTemplate.convertAndSend("/sub/metrics", metrics);
+    @Scheduled(fixedRate = 30000) // 20초마다 전송
+    public void publishMetrics() {
+        MetricsDto metrics = metricsService.fetchMetrics();
+        if (metrics != null) {
+            metricsCache.update(metrics);
+            messagingTemplate.convertAndSend("/sub/metrics", metrics);
 //            log.info("✅ 지표 정보 전송: {}", metrics);
-//        }
-//    }
+        }
+    }
 }

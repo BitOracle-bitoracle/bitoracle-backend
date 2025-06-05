@@ -48,7 +48,7 @@ public class PostController {
     private final UserEntityRepository userEntityRepository;;
 
     @GetMapping("/my-posts")
-    public List<PostResDto> getMyPosts(@CookieValue("access") String authorization) {
+    public List<PostResDto> getMyPosts(@RequestHeader("Authorization") String authorization) {
         String token=authorization.replace("Bearer ","");
         String name = jwtUtil.getUsername(token);
         UserEntity userEntity = userEntityRepository.findByName(name);
@@ -61,7 +61,7 @@ public class PostController {
     }
 
     @PostMapping(value = "/user")
-    public void selectUpDown(@CookieValue("access") String authorization){
+    public void selectUpDown(@RequestHeader("Authorization") String authorization){
         String token=authorization.replace("Bearer ","");
         String name = jwtUtil.getUsername(token);
         UserEntity userEntity = userEntityRepository.findByName(name);
@@ -80,7 +80,7 @@ public class PostController {
     @PostMapping(value = "/post",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DataResponseDto<PostSaveResDto> savePost(@RequestPart(value = "post") @Parameter(schema =@Schema(type = "string", format = "binary")) PostSaveReqDto postSaveReqDto,
                                                     @RequestPart(value = "images",required = false) List<MultipartFile> images,
-                                                    @CookieValue("access") String authorization
+                                                    @RequestHeader("Authorization") String authorization
                                                     )
     {
         String token=authorization.replace("Bearer ","");
@@ -143,7 +143,7 @@ public class PostController {
 
 
     @PostMapping("/{postId}/like")
-    public DataResponseDto<LikeRes> like(@PathVariable Long postId, @CookieValue("access") String authorization){
+    public DataResponseDto<LikeRes> like(@PathVariable Long postId, @RequestHeader("Authorization") String authorization){
         String token=authorization.replace("Bearer ","");
         String name = jwtUtil.getUsername(token);
         UserEntity userEntity = userEntityRepository.findByName(name);
@@ -162,7 +162,7 @@ public class PostController {
     //삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable Long postId,
-                                        @CookieValue("access") String authorization) {
+                                        @RequestHeader("Authorization") String authorization) {
         String token=authorization.replace("Bearer ","");
         String name = jwtUtil.getUsername(token);
         UserEntity userEntity = userEntityRepository.findByName(name);
@@ -178,8 +178,8 @@ public class PostController {
     public  DataResponseDto<PostSaveResDto> updatePost(
             @PathVariable Long postId,
             @RequestPart(value = "post") @Parameter(schema =@Schema(type = "string", format = "binary")) PostSaveReqDto postSaveReqDto,
-                @RequestPart(value = "images",required = false) List<MultipartFile> images,
-                @CookieValue("access") String authorization
+            @RequestPart(value = "images",required = false) List<MultipartFile> images,
+            @RequestHeader("Authorization") String authorization
                     ) {
         String token=authorization.replace("Bearer ","");
         String name = jwtUtil.getUsername(token);
