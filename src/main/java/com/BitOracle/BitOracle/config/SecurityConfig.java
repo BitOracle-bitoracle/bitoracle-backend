@@ -105,13 +105,14 @@ public class SecurityConfig {
                                 "/sub/**",       // stomp 구독 경로
                                 "/api/reply/**",
                                 "/ws-portfolio/**",
+                                "ws-metrics/**",
                                 "/api/portfolio/create",
                                 "/queue/**",
                                 "/socket.html",
                                 "/prediction",
                                 "/predict-now",
                                 "/real-price",
-                                "api/price/chart",
+                                "/api/price/chart",
                                 "/api/predict/chart",
                                 "/api/community/post/image/upload"
                         ).permitAll()
