@@ -41,5 +41,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setHandshakeHandler(new CustomHandshakeHandler()) // 커스텀 핸들러 설정
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
+
+        // 지표 정보 조회
+        registry.addEndpoint("/ws-metrics")
+                .setAllowedOriginPatterns("*");
     }
 }
