@@ -38,7 +38,7 @@ public class BtcPredictService {
     // 매일 00:00에 실행 (자정)
     @Scheduled(cron = "0 0 0 * * *")
     public List<PredictionDto> fetchPrediction() {
-        String url = "http://localhost:8000/predict";  // 로컬 테스트용 FastAPI 주소
+        String url = "http://52.78.231.143/predict";  // 로컬 테스트용 FastAPI 주소
 
         LocalDate endDate = LocalDate.now();
         // 6개월 전 날짜 계산
@@ -105,7 +105,7 @@ public class BtcPredictService {
 
 
     public void fetchAndSavePriceHistory(String startDate, String endDate) {
-        String url = "http://localhost:8000/bitcoin/history?start_date=" + startDate + "&end_date=" + endDate;
+        String url = "http://52.78.231.143/bitcoin/history?start_date=" + startDate + "&end_date=" + endDate;
 
         ResponseEntity<PriceHistoryRequestDto[]> response = restTemplate.getForEntity(url, PriceHistoryRequestDto[].class);
         PriceHistoryRequestDto[] priceHistories = response.getBody();
