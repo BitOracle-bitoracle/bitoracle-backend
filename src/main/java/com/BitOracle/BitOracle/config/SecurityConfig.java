@@ -55,7 +55,8 @@ public class SecurityConfig {
                                 "https://bitoracle.netlify.app",
                                 "https://jiangxy.github.io",
                                 "https://jiangxy.github.io/websocket-debug-tool/",
-                                "https://api.bitoracle.shop"));
+                                "https://api.bitoracle.shop",
+                                "http://52.78.231.143"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -113,6 +114,8 @@ public class SecurityConfig {
                                 "/ws-portfolio/**",
                                 "ws-metrics/**",
                                 "/api/portfolio/create",
+                                "/api/portfolio/buy",
+                                "/api/portfolio/sell",
                                 "/queue/**",
                                 "/socket.html",
                                 "/prediction",
