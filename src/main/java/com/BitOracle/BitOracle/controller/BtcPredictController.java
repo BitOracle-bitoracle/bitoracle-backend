@@ -12,12 +12,14 @@ import com.BitOracle.BitOracle.service.BtcPredictService;
 import com.BitOracle.BitOracle.service.BtcPriceService;
 import com.BitOracle.BitOracle.service.PredictionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +32,11 @@ public class BtcPredictController {
     private final PredictedHistoryRepository  predictedHistoryRepository;
 
     @GetMapping("/predict-now")
-    public List<PredictionDto> predictNow() {
-        return btcPredictService.fetchPrediction();
+    public List<PredictionDto> predictNow(
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        LocalDate startDate = endDate.minusMonths(6);
+        return btcPredictService.fetchPrediction(startDate, endDate);
     }
 
     @GetMapping("/prediction")

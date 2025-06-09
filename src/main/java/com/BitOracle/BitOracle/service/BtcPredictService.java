@@ -34,15 +34,15 @@ public class BtcPredictService {
     private List<PredictionDto> cachedPredictions;
 
 
-
-    // 매일 00:00에 실행 (자정)
     @Scheduled(cron = "0 0 0 * * *")
-    public List<PredictionDto> fetchPrediction() {
-        String url = "http://52.78.231.143/predict";  // 로컬 테스트용 FastAPI 주소
-
+    public void scheduledFetchPrediction() {
         LocalDate endDate = LocalDate.now();
-        // 6개월 전 날짜 계산
-        LocalDate startDate = LocalDate.now().minusMonths(6);
+        LocalDate startDate = endDate.minusMonths(6);
+        fetchPrediction(startDate, endDate);
+    }
+
+    public List<PredictionDto> fetchPrediction(LocalDate startDate, LocalDate endDate) {
+        String url = "http://52.78.231.143/predict";
 
         // POST 요청용 데이터 준비
         Map<String, Object> requestBody = new HashMap<>();
@@ -51,11 +51,9 @@ public class BtcPredictService {
         requestBody.put("window_size", 90);
         requestBody.put("future_prediction_days", 10);
 
-        // POST 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
-        // 요청 보내기
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
 
         try {
@@ -68,7 +66,6 @@ public class BtcPredictService {
                 for (PredictionDto dto : predictions) {
                     LocalDate date = LocalDate.parse(dto.getDate());
 
-                    // 1. PredictedHistory 처리
                     predictedHistoryRepository.findByDate(date).orElseGet(() -> {
                         PredictedHistory newPredicted = PredictedHistory.builder()
                                 .date(date)
@@ -77,7 +74,7 @@ public class BtcPredictService {
                                 .build();
                         return predictedHistoryRepository.save(newPredicted);
                     });
-                    // 2. PriceHistory 처리 (actual 값)
+
                     priceHistoryRepository.findByDate(date).orElseGet(() -> {
                         if (dto.getActual() != 0) {
                             PriceHistory newPrice = PriceHistory.builder()
@@ -98,6 +95,7 @@ public class BtcPredictService {
             return null;
         }
     }
+
 
     public PredictionDto getCachedPrediction() {
         return cachedPrediction.get();
