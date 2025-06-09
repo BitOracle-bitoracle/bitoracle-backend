@@ -49,7 +49,13 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://localhost:8080","https://bitoracle.netlify.app","https://jiangxy.github.io","https://jiangxy.github.io/websocket-debug-tool/")); // 프론트 서버 주소
+                        configuration.setAllowedOrigins(Arrays.asList(
+                                "http://localhost:3000",
+                                "http://localhost:8080",
+                                "https://bitoracle.netlify.app",
+                                "https://jiangxy.github.io",
+                                "https://jiangxy.github.io/websocket-debug-tool/",
+                                "https://api.bitoracle.shop"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
