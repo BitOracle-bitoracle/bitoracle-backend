@@ -120,7 +120,8 @@ public class SecurityConfig {
                                 "/real-price",
                                 "/api/price/chart",
                                 "/api/predict/chart",
-                                "/api/community/post/image/upload"
+                                "/api/community/post/image/upload",
+                                "/api/mypage/userinfo"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
