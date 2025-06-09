@@ -113,6 +113,8 @@ public class SecurityConfig {
                                 "/ws-portfolio/**",
                                 "ws-metrics/**",
                                 "/api/portfolio/create",
+                                "/api/portfolio/buy",
+                                "/api/portfolio/sell",
                                 "/queue/**",
                                 "/socket.html",
                                 "/prediction",
