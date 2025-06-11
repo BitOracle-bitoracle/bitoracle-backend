@@ -8,41 +8,54 @@
 </head>
 <body>
 <h2>WebSocket 포트폴리오 수신 테스트</h2>
-<pre id="output">연결 중...</pre>
 
-<!-- ✅ 연결 종료 버튼 -->
-<button id="disconnectBtn">🔌 연결 종료</button>
+<label for="jwtToken">🔐 JWT 토큰:</label><br>
+<input type="text" id="jwtToken" style="width: 600px;" placeholder="여기에 Bearer 토큰 입력" />
+<button onclick="connect()">🔗 연결</button>
+<button onclick="disconnect()">🔌 연결 종료</button>
+
+<pre id="output">⏳ 대기 중...</pre>
 
 <script>
-    document.cookie = "access=eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoi6rmA7KeE7IScIiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTc0NzgyNzMxMSwiZXhwIjoxNzQ3ODI3OTExfQ.AHyAK1_4wzNODIhREH5Hts1PVaUvjCawHQ0fermJWNc; path=/"; // <-- JWT 직접 삽입
+    let stompClient = null;
+    let socket = null;
 
-    const socket = new SockJS("http://localhost:8080/ws-portfolio");
-    //const socket = new SockJS("http://localhost:8080/ws-portfolio");
-    const stompClient = Stomp.over(socket);
+    function connect() {
+        const token = document.getElementById("jwtToken").value.trim();
+        if (!token) {
+            alert("JWT 토큰을 입력하세요.");
+            return;
+        }
 
-    stompClient.connect({}, function (frame) {
-        output.innerText += "\n✅ 연결됨: " + frame;
-
-        stompClient.subscribe("/user/queue/portfolio", function (message) {
-            //output.innerText += "\n📩 수신된 메시지:\n" + message.body;
-            const portfolios = JSON.parse(message.body);
-            output.innerText += "\n📩 수신된 포트폴리오:\n" + JSON.stringify(portfolios, null, 2);
+        const socket = new SockJS("http://localhost:8080/ws-portfolio", null, {
+            transports: ['websocket', 'xhr-streaming']  // ← jsonp 제외
         });
+        stompClient = Stomp.over(socket);
 
-    }, function (error) {
-        output.innerText += "\n❌ 연결 실패: " + error;
-    });
-    // ✅ 연결 종료 함수
+        const headers = {
+            Authorization: "Bearer " + token
+        };
+
+        stompClient.connect(headers, function (frame) {
+            document.getElementById("output").innerText += "\n✅ 연결됨: " + frame;
+
+            stompClient.subscribe("/user/queue/portfolio", function (message) {
+                const portfolios = JSON.parse(message.body);
+                document.getElementById("output").innerText += "\n📩 수신된 포트폴리오:\n" + JSON.stringify(portfolios, null, 2);
+            });
+
+        }, function (error) {
+            document.getElementById("output").innerText += "\n❌ 연결 실패: " + error;
+        });
+    }
+
     function disconnect() {
         if (stompClient && stompClient.connected) {
             stompClient.disconnect(function () {
-                output.innerText += "\n🔌 연결 종료됨.";
+                document.getElementById("output").innerText += "\n🔌 연결 종료됨.";
             });
         }
     }
-
-    // ✅ 버튼 이벤트 등록
-    document.getElementById("disconnectBtn").addEventListener("click", disconnect);
 </script>
 </body>
 </html>

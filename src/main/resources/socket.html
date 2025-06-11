@@ -22,23 +22,21 @@
     let socket = null;
 
     function setTokenAndConnect() {
-        const token = document.getElementById("token").value;
+        const token = document.getElementById("token").value.trim();
         if (!token) {
-            alert("Access Token을 입력하세요.");
+            alert("토큰을 입력하세요!");
             return;
         }
 
-        // JWT를 쿠키에 저장 (쿠키 방식 인증을 서버가 사용한다는 전제)
-        document.cookie = "access=" + token + "; path=/";
-
-        connect();
-    }
-
-    function connect() {
         socket = new SockJS("http://localhost:8080/ws-portfolio");
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, function (frame) {
+        // 헤더에 Authorization 추가
+        const headers = {
+            Authorization: "Bearer " + token
+        };
+
+        stompClient.connect(headers, function (frame) {
             document.getElementById("output").innerText += "\n✅ 연결됨: " + frame;
 
             stompClient.subscribe("/user/queue/portfolio", function (message) {
