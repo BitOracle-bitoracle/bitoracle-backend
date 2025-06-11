@@ -31,12 +31,9 @@ public class JWTFilter extends OncePerRequestFilter { // 한 번만 요청이 �
 //        String accessToken = request.getHeader("access");
 
         String accessToken = null;
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("access")) {
-                    accessToken = cookie.getValue();
-                }
-            }
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            accessToken = authHeader.substring(7);
         }
         // System.out.println("access token : " + accessToken);
 
