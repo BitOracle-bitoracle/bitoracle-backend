@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
@@ -57,6 +60,17 @@ public class PredictionService {
         log.info(user.toString());
 
         return recordRepository.findByUser(user);
+    }
+
+    public Prediction checkTodayPrediction(String authorization) {
+        Long userId = getUserId(authorization);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
+
+        return predictionRepository.findByUserAndCreatedAtBetween(user, startOfToday, endOfToday).orElse(null);
     }
 
     public Long getUserId(String authorization){

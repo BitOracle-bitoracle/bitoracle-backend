@@ -42,4 +42,18 @@ public class PredictionConverter {
                 .failure(record.getFailure())
                 .build();
     }
+
+    public static PredictionResponseDto.CheckPredictionResponseDto toCheckPredictionResponseDto(Prediction prediction) {
+        if (prediction == null) {
+            return PredictionResponseDto.CheckPredictionResponseDto.builder()
+                    .predicted(false)
+                    .upDown(null)
+                    .build();
+        }
+
+        return PredictionResponseDto.CheckPredictionResponseDto.builder()
+                .predicted(true)
+                .upDown(prediction.getUpDown())
+                .build();
+    }
 }

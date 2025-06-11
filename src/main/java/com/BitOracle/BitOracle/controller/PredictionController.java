@@ -51,4 +51,15 @@ public class PredictionController {
 
         return DataResponseDto.of(responseDto, "해당 유저의 예측 통계 정보를 조회했습니다.");
     }
+
+    @GetMapping(value = "predict/check")
+    public DataResponseDto<PredictionResponseDto.CheckPredictionResponseDto> checkTodayPrediction(
+            @RequestHeader("Authorization") String authorization) {
+
+        Prediction prediction = predictionService.checkTodayPrediction(authorization);
+        PredictionResponseDto.CheckPredictionResponseDto responseDto =
+                PredictionConverter.toCheckPredictionResponseDto(prediction);
+
+        return DataResponseDto.of(responseDto, "오늘 예측 여부를 확인했습니다.");
+    }
 }

@@ -56,4 +56,16 @@ public class PredictionResponseDto {
 
         private int failure;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CheckPredictionResponseDto {
+        @JsonProperty("predicted")
+        private boolean predicted;
+
+        @JsonProperty("upDown")
+        private PredictType upDown; // 없으면 null
+    }
 }
