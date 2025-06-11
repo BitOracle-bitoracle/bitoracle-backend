@@ -28,7 +28,7 @@ public class PredictionResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class getCalenderResponseDto{
+    public static class getCalendarResponseDto{
         @JsonProperty("predict_id")
         private Long predictId;
 

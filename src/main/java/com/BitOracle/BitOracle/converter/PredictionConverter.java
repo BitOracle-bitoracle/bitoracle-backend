@@ -22,9 +22,9 @@ public class PredictionConverter {
                 .build();
     }
 
-    public static List<PredictionResponseDto.getCalenderResponseDto> toGetCalenderResponseDto(List<Prediction> predictionList){
+    public static List<PredictionResponseDto.getCalendarResponseDto> toGetCalendarResponseDto(List<Prediction> predictionList){
         return predictionList.stream()
-                .map(prediction -> PredictionResponseDto.getCalenderResponseDto.builder()
+                .map(prediction -> PredictionResponseDto.getCalendarResponseDto.builder()
                         .predictId(prediction.getPredictId())
                         .createdAt(LocalDate.from(prediction.getCreatedAt()))
                         .upDown(prediction.getUpDown())

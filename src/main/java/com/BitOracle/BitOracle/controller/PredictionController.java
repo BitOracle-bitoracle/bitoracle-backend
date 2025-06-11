@@ -32,12 +32,12 @@ public class PredictionController {
         return DataResponseDto.of(responseDto, "UP/DOWN 예측 정보를 저장했습니다.");
     }
 
-    @GetMapping(value = "predict/calender")
-    public DataResponseDto<List<PredictionResponseDto.getCalenderResponseDto>> getCalender(
+    @GetMapping(value = "predict/calendar")
+    public DataResponseDto<List<PredictionResponseDto.getCalendarResponseDto>> getCalendar(
             @RequestHeader("Authorization") String authorization){
 
-        List<Prediction> predictionList = predictionService.getCalender(authorization);
-        List<PredictionResponseDto.getCalenderResponseDto> responseDto = PredictionConverter.toGetCalenderResponseDto(predictionList);
+        List<Prediction> predictionList = predictionService.getCalendar(authorization);
+        List<PredictionResponseDto.getCalendarResponseDto> responseDto = PredictionConverter.toGetCalendarResponseDto(predictionList);
 
         return DataResponseDto.of(responseDto, "해당 유저의 달력 히스토리 조회를 위한 모든 예측 기록을 조회했습니다.");
     }

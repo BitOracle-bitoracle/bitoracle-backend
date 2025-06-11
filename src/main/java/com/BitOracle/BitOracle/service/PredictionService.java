@@ -41,7 +41,7 @@ public class PredictionService {
         return predictionRepository.save(prediction);
     }
 
-    public List<Prediction> getCalender(String authorization){
+    public List<Prediction> getCalendar(String authorization){
         Long userId = getUserId(authorization);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
