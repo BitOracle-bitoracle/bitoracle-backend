@@ -22,8 +22,9 @@ public class PostSaveReqDto {
     private String title;
     @NotBlank(message = "내용을 입력해주세요")
     private String content;
-    @NotBlank(message = "게시글 유형 입력해")
-    private PostType postType;
+
+    @Builder.Default
+    private PostType postType = PostType.NORMAL;
 
     public Post toEntity(User user) {
         return Post.builder()
