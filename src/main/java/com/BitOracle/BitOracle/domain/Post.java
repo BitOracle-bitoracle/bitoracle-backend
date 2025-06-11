@@ -27,7 +27,8 @@ public class Post extends BaseEntity {
     private int likeCount = 0;
     @Column(name = "post_type")
     @Enumerated(EnumType.STRING)
-    private PostType postType;
+    @Builder.Default
+    private PostType postType = PostType.NORMAL;
 
     @Column(nullable = true)
     private String thumbnailUrl; // 썸네일 이미지 URL
