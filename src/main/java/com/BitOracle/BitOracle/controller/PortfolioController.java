@@ -32,7 +32,6 @@ public class PortfolioController {
         portfolioService.createPortfolio(userId);
         return ResponseEntity.ok("포트폴리오가 성공적으로 생성되었습니다.");
     }
-
     @PostMapping("/buy")
     public ResponseEntity<String> buyCoin(
             @RequestHeader("Authorization") String authorization,
