@@ -24,12 +24,22 @@ import java.util.List;
 public class PortfolioController {
     private final PortfolioService portfolioService;
 
+    @PostMapping("/create")
+    public ResponseEntity<String> createPortfolio(
+            @RequestHeader("Authorization") String authorization
+    ) {
+        Long userId = portfolioService.getUserId(authorization);
+        portfolioService.createPortfolio(userId);
+        return ResponseEntity.ok("포트폴리오가 성공적으로 생성되었습니다.");
+    }
+
     @PostMapping("/buy")
     public ResponseEntity<String> buyCoin(
             @RequestHeader("Authorization") String authorization,
             @RequestBody BuyHistoryCreateRequest request
     ) {
         Long userId = portfolioService.getUserId(authorization);
+        portfolioService.createPortfolio(userId);
         portfolioService.buyCoin(userId, request);
         return ResponseEntity.ok("매수 완료");
     }

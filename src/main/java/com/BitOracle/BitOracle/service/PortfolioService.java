@@ -13,6 +13,7 @@ import com.BitOracle.BitOracle.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,8 @@ public class PortfolioService {
     private final CoinRepoistory  coinRepoistory;
     private final JWTUtil jwtUtil;
     private final PortfolioRepository portfolioRepository;
+    private final ApplicationContext applicationContext;
+
 
     /// 포폴 조회
     @Transactional(readOnly = true)
@@ -102,6 +105,7 @@ public class PortfolioService {
             portfolio = Portfolio.builder()
                     .user(user)
                     .build();
+
         }
 
         portfolioRepository.save(portfolio); // cascade 설정 필요
@@ -113,7 +117,6 @@ public class PortfolioService {
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 포트폴리오가 없다면 생성
-        createPortfolio(userId);
         Portfolio portfolio = user.getPortfolio();
 
         // coinName으로 Coin 찾기 (없으면 생성)
