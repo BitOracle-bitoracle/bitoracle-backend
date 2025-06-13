@@ -78,11 +78,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             userEntityRepository.save(existData);
 
-            User existUser = existData.getUser();
-            existUser.setNickname(oAuth2Response.getEmail().substring(0, oAuth2Response.getEmail().indexOf("@")));
-
-            userRepository.save(existUser);
-
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(existData.getUsername());
             userDTO.setName(oAuth2Response.getName()); // 새로 업데이트된 값으로 바꿔줘야함
