@@ -1,5 +1,6 @@
 package com.BitOracle.BitOracle.service;
 
+import com.BitOracle.BitOracle.domain.Portfolio;
 import com.BitOracle.BitOracle.domain.User;
 import com.BitOracle.BitOracle.domain.UserEntity;
 import com.BitOracle.BitOracle.domain.enums.UserType;
@@ -58,6 +59,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .point(0)
                     .userType(UserType.USER)
                     .build();
+
+            user.setPortfolio(Portfolio.create());
 
             userRepository.save(user);
 

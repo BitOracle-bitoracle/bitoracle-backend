@@ -27,4 +27,7 @@ public class Portfolio extends BaseEntity {
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
     private List<Coin> coinList = new ArrayList<>();
 
+    public static Portfolio create() {
+        return new Portfolio();
+    }
 }
