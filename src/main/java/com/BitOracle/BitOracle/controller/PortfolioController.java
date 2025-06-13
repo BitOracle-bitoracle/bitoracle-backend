@@ -38,7 +38,7 @@ public class PortfolioController {
             @RequestBody BuyHistoryCreateRequest request
     ) {
         Long userId = portfolioService.getUserId(authorization);
-        portfolioService.createPortfolio(userId);
+        //portfolioService.createPortfolio(userId);
         portfolioService.buyCoin(userId, request);
         return ResponseEntity.ok("매수 완료");
     }

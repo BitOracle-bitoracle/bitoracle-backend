@@ -66,4 +66,13 @@ public class User extends BaseEntity {
         //comment의 writer 설정은 comment에서 함
         replyList.add(comment);
     }
+
+    public void setPortfolio(Portfolio portfolio) {
+        this.portfolio = portfolio;
+        if (portfolio.getUser() != this) {
+            portfolio.setUser(this);
+        }
+    }
+
+
 }
