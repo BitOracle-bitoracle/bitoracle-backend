@@ -20,7 +20,7 @@ public class UserEntity extends BaseEntity {
 
     // UserEntity는 로그인 정보만 관리, User는 다른 테이블들과 관계를 가지도록 구분하기 위해
     // UserEntity가 User를 참조하도록 설계
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 }
