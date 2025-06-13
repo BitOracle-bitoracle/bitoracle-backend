@@ -110,8 +110,8 @@ public class BtcPriceService {
 
         log.info("어제 가격: {}, 오늘 가격: {}, 실제 방향: {}", yesterdayPrice, todayPrice, realUpDown);
 
-        // 오늘 날짜의 Prediction 가져와서 isCorrect 업데이트
-        List<Prediction> predictions = predictionRepository.findByCreatedAtBetween(today.atStartOfDay(), today.atTime(23, 59, 59));
+        // 어제 날짜의 Prediction 즉, 어제 사용자가 한 가격예측을 가져와서 isCorrect 업데이트
+        List<Prediction> predictions = predictionRepository.findByCreatedAtBetween(yesterday.atStartOfDay(), yesterday.atTime(23, 59, 59));
 
         for (Prediction prediction : predictions) {
             if (prediction.getUpDown() == realUpDown) {
