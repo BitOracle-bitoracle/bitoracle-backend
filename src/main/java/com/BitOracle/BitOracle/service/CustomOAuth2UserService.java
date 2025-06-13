@@ -62,8 +62,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             user.setPortfolio(Portfolio.create());
 
-            userRepository.save(user);
-
             userEntity.setUser(user);
             userEntityRepository.save(userEntity);
 
