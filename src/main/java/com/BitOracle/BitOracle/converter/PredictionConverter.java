@@ -28,7 +28,7 @@ public class PredictionConverter {
                         .predictId(prediction.getPredictId())
                         .createdAt(LocalDate.from(prediction.getCreatedAt()))
                         .upDown(prediction.getUpDown())
-                        .correct(prediction.getIsCorrect())
+                        .correct(prediction.getIsCorrect() == null ? "unknown" : prediction.getIsCorrect().toString())
                         .build()
                 )
                 .collect(Collectors.toList());

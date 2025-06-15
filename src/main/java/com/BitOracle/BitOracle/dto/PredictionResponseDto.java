@@ -39,7 +39,7 @@ public class PredictionResponseDto {
         private PredictType upDown;
 
         @JsonProperty("correct")
-        private boolean correct;
+        private String correct;
     }
 
     @Builder
